@@ -1,0 +1,64 @@
+.selected-movie-container {
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+  }
+  
+  .movie-details {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+  
+  .movie-details img {
+    width: 200px;
+    border-radius: 10px;
+    margin-right: 2rem;
+  }
+  
+  .movie-info {
+    max-width: 600px;
+  }
+  
+  .movie-info h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .movie-info p {
+    margin: 0.5rem 0;
+  }
+  
+  .movie-trailer {
+    margin-left: auto;
+  }
+  
+  .movie-trailer iframe {
+    border-radius: 10px;
+  }
+  
+  .screenings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .screening-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .screening-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .screening-button:hover {
+    background-color: #45a049;
+  }
+  

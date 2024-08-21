@@ -1,0 +1,49 @@
+.home-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    margin-top: 5%;
+  }
+  
+  .welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  h1 {
+    font-size: 5em;
+    margin-bottom: 0.5em;
+    color: #007bff;
+    text-shadow: 2px 2px 4px rgba(0, 123, 255, 0.5);
+  }
+  
+  .animated-name {
+    font-size: 4em;
+    font-weight: bold;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    color: #333;
+    text-shadow: 2px 2px 4px rgba(0, 123, 255, 0.5);
+  }
+  
+  .letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeIn 0.5s forwards;
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

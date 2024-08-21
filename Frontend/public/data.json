@@ -1,0 +1,166 @@
+{
+    "users": [
+      {
+        "id": 1,
+        "UserID":347589373,
+        "username": "shira",
+        "password": "123456",
+        "email": "user1@example.com",
+        "isAdmin": false
+      },
+      {
+        "id": 2,
+        "UserID":347589374,
+        "username": "Dan",
+        "password": "234567",
+        "email": "admin@example.com",
+        "isAdmin": true
+      },
+      {
+        "id": 3,
+        "UserID":347589375,
+        "username": "Hodaya",
+        "password": "password2",
+        "email": "user2@example.com",
+        "isAdmin": false
+      }
+    ],
+    "movies": [
+      {
+        "id": 1,
+        "title": "HOW TO TRAIN YOUR DRAGON",
+        "description": "This is a description of Movie 1.",
+        "duration": 120,
+        "genre": "Action",
+        "rating": 4.5,
+        "director": "Director 1",
+        "releaseDate": "2024-01-01",
+        "trailerPath": "https://www.youtube.com/watch?v=SkcucKDrbOI",
+        "imagePath": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9F_tD8CIQIhH-nfka22l4io0qYlGiZ9fPvA&s"
+      },
+      {
+        "id": 2,
+        "title": "Dumbo",
+        "description": "This is a description of Movie 2.",
+        "duration": 90,
+        "genre": "Comedy",
+        "rating": 3,
+        "director": "Director 2",
+        "releaseDate": "2024-01-01",
+        "trailerPath": "https://www.youtube.com/watch?v=7NiYVoqBt-8",
+        "imagePath": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0xEucqj98XrJ4QuiQQI23wFSvk9ZS52vpZVVDPAXjT2pMoPLXk8zHUbXfPzMIIQqFa-4&usqp=CAU"
+      },
+      {
+        "id": 3,
+        "title": "Moana 2",
+        "description": "This is a description of Movie 2.",
+        "duration": 90,
+        "genre": "Comedy",
+        "rating": 4,
+        "director": "Director 2",
+        "releaseDate": "2024-01-01",
+        "trailerPath": "https://www.youtube.com/watch?v=qkgkUCqEum4",
+        "imagePath": "https://people.com/thmb/_Rx1jqVsdU799aHTLSxBaYdaS4E=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(877x282:879x284)/moana-2-053124-2-287cc6db5b924481a6dd87158a0e3e97.jpg"
+
+      },
+      {
+        "id": 4,
+        "title": "Moana",
+        "description": "This is a description of Movie 2.",
+        "duration": 90,
+        "genre": "Comedy",
+        "rating": 4,
+        "director": "Director 2",
+        "releaseDate": "2024-01-01",
+        "trailerPath": "https://www.youtube.com/watch?v=qkgkUCqEum4",
+        "imagePath": "https://people.com/thmb/_Rx1jqVsdU799aHTLSxBaYdaS4E=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(877x282:879x284)/moana-2-053124-2-287cc6db5b924481a6dd87158a0e3e97.jpg"
+      }
+    ],
+    "screenings": [
+      {
+        "id": 1,
+        "movieId": 1,
+        "hallId": 1,
+        "date": "2024-08-10",
+        "time": "18:00",
+        "bookedSeats" :["25", "26", "27"]
+      },
+      {
+        "id": 2,
+        "movieId": 2,
+        "hallId": 2,
+        "date": "2024-09-10",
+        "time": "20:00",
+        "bookedSeats" :["35","36","37"]
+      },
+      {
+        "id": 3,
+        "movieId": 3,
+        "hallId": 2,
+        "date": "2024-08-10",
+        "time": "20:00",
+        "bookedSeats" :["45","46","47"]
+      },
+      {
+        "id": 4,
+        "movieId": 2,
+        "hallId": 2,
+        "date": "2024-08-10",
+        "time": "20:00",
+        "bookedSeats" :["55","56","57"]
+      }
+    ],
+    "halls": [
+      {
+        "id": 1,
+        "name": "12D",
+        "capacity": 200
+      },
+      {
+        "id": 2,
+        "name": "11E",
+        "capacity": 200
+      }
+    ],
+    "carts": [
+    {
+      "userId": 1,
+      "items": []
+    },
+    {
+      "userId": 2,
+      "items": []
+    },
+    {
+      "userId": 3,
+      "items": []
+    }
+  ],
+  "orders":[
+    {
+    "orderId": 100000000, 
+    "userId": 1, "items": [
+    {"screeningId": 1, "seatNumber": "1", "price": 10},
+    {"screeningId": 1, "seatNumber": "2", "price": 10}],
+    "totalPrice": 20, 
+    "date": "2024-08-10"
+  },
+  {
+  "orderId": 100000001, 
+  "userId": 1, "items": [
+    {"screeningId": 1, "seatNumber": "21", "price": 10},
+    {"screeningId": 1, "seatNumber": "22", "price": 10}], 
+  "totalPrice": 21.4, 
+  "date": "2024-08-14"
+ },
+ {"orderId": 100000002, 
+ "userId": 1, 
+ "items": [
+  {"screeningId": 2, "seatNumber": "11", "price": 10},
+  {"screeningId": 2, "seatNumber": "12", "price": 10}], 
+ "totalPrice": 21.4, 
+ "date": "2024-08-14"
+ }
+  ]
+  }
+

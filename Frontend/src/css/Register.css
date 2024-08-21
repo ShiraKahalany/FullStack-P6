@@ -1,0 +1,87 @@
+/* src/css/Register.css */
+
+.register-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.5;
+  background-color: #fff;
+  margin: 0;
+  flex-direction: column;
+}
+
+.register-page .main {
+  max-width: 440px;
+  width: 100%;
+  background-color: #fff;
+  padding: 40px 20px;
+  text-align: left;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  margin-top: 25%;
+}
+
+.register-page h1 {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #000;
+}
+
+.register-page p {
+  color: #999;
+  margin-bottom: 20px;
+}
+
+.register-page label {
+  display: block;
+  margin-bottom: 5px;
+  color: #000;
+  font-weight: bold;
+}
+
+.register-page input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.register-page .wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-page .submit-button {
+  width: 20%;
+  background-color: #fa541c;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.register-page .submit-button:hover {
+  background-color: #e03d0c;
+}
+
+.register-page a {
+  color: #fa541c;
+  text-decoration: none;
+}
+
+.register-page a:hover {
+  text-decoration: underline;
+}
+
+.register-page .error-message {
+  color: red;
+  margin-bottom: 15px;
+}

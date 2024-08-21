@@ -1,0 +1,99 @@
+/* src/css/Login.css */
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.5;
+  height: 100vh;
+  background-color: #fff;
+  margin: 0;
+  flex-direction: column;
+  padding: 0 20px;
+}
+
+.login-page .main {
+  max-width: 400px;
+  width: 100%;
+  background-color: #fff;
+  padding: 40px 20px;
+  text-align: left;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.login-page h1 {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #000;
+}
+
+.login-page p {
+  color: #999;
+  margin-bottom: 20px;
+}
+
+.login-page label {
+  display: block;
+  margin-bottom: 5px;
+  color: #000;
+  font-weight: bold;
+}
+
+.login-page input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.login-page .login-options {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.forgot-password {
+  color: #fa541c;
+  font-size: 0.9em;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.login-page .wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-page .submit-button {
+  width: 20%;
+  background-color: #fa541c;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.login-page .submit-button:hover {
+  background-color: #e03d0c;
+}
+
+.sign-up {
+  color: #fa541c;
+  text-decoration: none;
+}
+
+.sign-up:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,79 @@
+/* src/css/NavBar.css */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #333;
+  color: #fff;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  max-width: -webkit-fill-available;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar-logo a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-logo a:hover {
+  color: #76a1c7;
+}
+
+.navbar-links a {
+  margin: 0 1rem;
+  text-decoration: none;
+  color: #fff;
+  font-size: 1.1rem;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-links a:hover {
+  color: #76a1c7;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-user span {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+}
+
+.navbar button {
+  background-color: #f44336;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.3s ease-in-out;
+  font-size: 0.85rem;
+}
+
+.navbar button:hover {
+  background-color: #d32f2f;
+}
+
+
+.navbar-user a {
+  margin-right: 15px;
+  display: inline-flex;
+  align-items: center;
+  color:#fff;
+}
+
+.navbar-user a svg {
+  margin-right: 5px;
+}
+
