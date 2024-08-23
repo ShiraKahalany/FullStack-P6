@@ -1,64 +1,167 @@
 .selected-movie-container {
-    padding: 2rem;
-    font-family: Arial, sans-serif;
-  }
-  
-  .movie-details {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-  }
-  
-  .movie-details img {
-    width: 200px;
-    border-radius: 10px;
-    margin-right: 2rem;
-  }
-  
-  .movie-info {
-    max-width: 600px;
-  }
-  
-  .movie-info h3 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-  
-  .movie-info p {
-    margin: 0.5rem 0;
-  }
-  
-  .movie-trailer {
-    margin-left: auto;
-  }
-  
-  .movie-trailer iframe {
-    border-radius: 10px;
-  }
-  
-  .screenings {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .screening-item {
-    display: flex;
-    align-items: center;
-  }
-  
-  .screening-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 0.5rem 1rem;
-    margin-left: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-  
-  .screening-button:hover {
-    background-color: #45a049;
-  }
-  
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  margin-top: 60px;
+}
+
+.movie-trailer iframe {
+  width: 100%;
+  height: 500px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.movie-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.movie-info {
+  width: 65%;
+}
+
+.movie-info h3 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.movie-info p {
+  margin: 5px 0;
+}
+
+.movie-poster {
+  width: 30%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.movie-poster img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.selected-showtime {
+  margin-bottom: 20px;
+}
+
+.seats-layout {
+  text-align: center;
+}
+
+.seats-grid {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 5px;
+  justify-items: center;
+}
+
+.seat-button {
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.seat-button.selected {
+  background-color: green;
+  color: white;
+}
+
+.seat-button.unavailable {
+  background-color: orange;
+  color: white;
+  cursor: not-allowed;
+}
+
+.seat-button:hover:not(.unavailable):not(.selected) {
+  background-color: lightgrey;
+}
+
+.selected-tickets {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 900px;
+  gap: 10px;
+}
+
+.ticket-info {
+  background-color: #f8f8f8;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  margin: 2px;
+}
+
+.add-ticket-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 20px;
+}
+
+.add-ticket-button:hover {
+  background-color: #0056b3;
+}
+
+/* Modal styling */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 500px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.modal-buttons button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.modal-buttons button:hover {
+  opacity: 0.8;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import Axios
 import { useNavigate } from 'react-router-dom';
 import '../css/Movies.css';
-import data from '../../public/data.json';  // Adjust the path accordingly
 
 const Movies = () => {
   const [movies, setMovies] = useState([]);
@@ -11,9 +11,23 @@ const Movies = () => {
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
-    setMovies(data.movies || []);
-    setScreenings(data.screenings || []);
-    setSearchResults(data.movies || []);
+    // Fetch movies and screenings from the backend API
+    axios.get('http://localhost:5000/api/movies')
+      .then(response => {
+        setMovies(response.data);
+        setSearchResults(response.data); // Initially show all movies
+      })
+      .catch(error => {
+        console.error('Error fetching movies:', error);
+      });
+
+    axios.get('http://localhost:5000/api/screenings')
+      .then(response => {
+        setScreenings(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching screenings:', error);
+      });
   }, []);
 
   const handleSearch = (event) => {
@@ -29,11 +43,26 @@ const Movies = () => {
   };
 
   const getScreeningsForMovie = (movieId) => {
-    return screenings.filter(screening => screening.movieId === movieId);
+    return screenings
+      .filter(screening => screening.movieId === movieId)
+      .sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)); // Sort by date and time
   };
 
-  const handleMoreInfoClick = (movieId) => {
-    navigate(`/movies/${movieId}`);
+  const groupScreeningsByDate = (movieId) => {
+    const movieScreenings = getScreeningsForMovie(movieId);
+    const grouped = movieScreenings.reduce((acc, screening) => {
+      const date = new Date(screening.date).toLocaleDateString();
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(screening);
+      return acc;
+    }, {});
+    return grouped;
+  };
+
+  const handleScreeningClick = (movieId, screeningId) => {
+    navigate(`/movies/${movieId}/screening/${screeningId}`);
   };
 
   return (
@@ -58,21 +87,25 @@ const Movies = () => {
               <p><strong>Category:</strong> {movie.genre}</p>
               <p><strong>Runtime:</strong> {movie.duration} minutes</p>
               <div className="screenings">
-                {getScreeningsForMovie(movie.id).map(screening => (
-                  <div key={screening.id} className="screening-item">
-                    <span>Showtimes on {new Date(screening.date).toLocaleDateString()}:</span>
-                    <button className="screening-button">
-                      {new Date(`${screening.date}T${screening.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </button>
+                {Object.entries(groupScreeningsByDate(movie.id)).map(([date, screenings]) => (
+                  <div key={date} className="screening-date-group">
+                    <span>Showtimes on {date}:</span>
+                    {screenings.map(screening => {
+                      const formattedTime = screening.time.slice(0, 5); // Remove seconds (get "HH:mm" format)
+
+                      return (
+                        <button
+                          key={screening.id}
+                          className="screening-button"
+                          onClick={() => handleScreeningClick(movie.id, screening.id)}
+                        >
+                          {formattedTime}
+                        </button>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
-              <button 
-                className="info-button"
-                onClick={() => handleMoreInfoClick(movie.id)} // Navigate to SelectedMovie
-              >
-                More Info & Tickets
-              </button>
             </div>
           </div>
         ))}

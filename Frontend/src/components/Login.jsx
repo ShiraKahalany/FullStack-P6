@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Import Axios
 import AuthContext from '../components/AuthContext';
-import data from '../../public/data.json';  // Adjust the path accordingly
 import '../css/Login.css';
 
 const Login = () => {
@@ -14,19 +14,26 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Find the user in the data.json file
-    const user = data.users.find((u) => u.email === email && u.password === password);
-    
-    if (user) {
-      setUser(user);
-      localStorage.setItem('user', JSON.stringify(user));
+    try {
+      // Fetch the user data from the backend
+      const response = await axios.post('http://localhost:5000/api/users/login', { email, password });
 
-      // Fetch the user's cart from data.json
-      const userCart = data.carts.find(cart => cart.userId === user.id);
-      localStorage.setItem('cart', JSON.stringify(userCart ? userCart.items : []));
+      if (response.data) {
+        const user = response.data;
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
 
-      navigate('/');
-    } else {
+        // Fetch the user's cart from the backend
+        const cartResponse = await axios.get(`http://localhost:5000/api/carts/${user.id}`);
+        const userCart = cartResponse.data;
+        localStorage.setItem('cart', JSON.stringify(userCart ? userCart.items : []));
+
+        navigate('/');
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
       setError('Invalid email or password');
     }
   };

@@ -1,12 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import data from '../../public/data.json';  // Adjust the path accordingly
 import '../css/SelectSeats.css';  // Make sure to define the styles here
 
 const SelectSeats = () => {
   const { movieId } = useParams();
+  const [screening, setScreening] = useState(null);
+  const [movie, setMovie] = useState(null);
+  const [hall, setHall] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const screening = data.screenings.find(s => s.id === parseInt(movieId)); // Assuming movieId is the screeningId
+
+  useEffect(() => {
+    // Fetch the screening details from the server
+    axios.get(`http://localhost:5000/api/screenings/${movieId}`)
+      .then(response => {
+        setScreening(response.data);
+        return response.data;
+      })
+      .then(screening => {
+        // Fetch the associated movie and hall details
+        axios.get(`http://localhost:5000/api/movies/${screening.movieId}`)
+          .then(response => setMovie(response.data));
+
+        axios.get(`http://localhost:5000/api/halls/${screening.hallId}`)
+          .then(response => setHall(response.data));
+      })
+      .catch(error => {
+        console.error('Error fetching screening:', error);
+      });
+  }, [movieId]);
 
   const handleSeatClick = (seatNumber) => {
     if (selectedSeats.includes(seatNumber)) {
@@ -17,17 +39,17 @@ const SelectSeats = () => {
   };
 
   const isSeatSelected = (seatNumber) => selectedSeats.includes(seatNumber);
-  const isSeatAvailable = (seatNumber) => !screening.bookedSeats.includes(seatNumber.toString());
+  const isSeatAvailable = (seatNumber) => screening && !screening.bookedSeats.includes(seatNumber.toString());
 
   const handleAddToCart = () => {
     const newTickets = selectedSeats.map(seatNumber => {
       return {
         id: generateUniqueId(), // Generate a unique ID for the ticket
         ticketId: generateTicketId(), // Generate a unique ticket number
-        movieTitle: data.movies.find(m => m.id === screening.movieId).title,
+        movieTitle: movie.title,
         date: screening.date,
         time: screening.time,
-        hall: data.halls.find(h => h.id === screening.hallId).name,
+        hall: hall.name,
         seatNumber: seatNumber,
         price: 10.00, // Example price, you can modify this
       };
@@ -38,21 +60,25 @@ const SelectSeats = () => {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
+  if (!screening || !movie || !hall) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="select-seats-container">
       <h2>Get Tickets</h2>
       <div className="selected-showtime">
         <h3>Selected Showtime:</h3>
-        <p><strong>Movie:</strong> {data.movies.find(m => m.id === screening.movieId).title}</p>
+        <p><strong>Movie:</strong> {movie.title}</p>
         <p><strong>Date:</strong> {new Date(screening.date).toLocaleDateString()}</p>
         <p><strong>Time:</strong> {screening.time}</p>
-        <p><strong>Hall:</strong> {data.halls.find(h => h.id === screening.hallId).name}</p>
-        <p><strong>Runtime:</strong> {data.movies.find(m => m.id === screening.movieId).duration} minutes</p>
+        <p><strong>Hall:</strong> {hall.name}</p>
+        <p><strong>Runtime:</strong> {movie.duration} minutes</p>
       </div>
       <div className="seats-layout">
         <h3>Screen</h3>
         <div className="seats-grid">
-          {Array.from({ length: 200 }, (_, index) => index + 1).map(seatNumber => (
+          {Array.from({ length: hall.capacity || 200 }, (_, index) => index + 1).map(seatNumber => (
             <button
               key={seatNumber}
               className={`seat-button ${isSeatSelected(seatNumber) ? 'selected' : ''} ${!isSeatAvailable(seatNumber) ? 'unavailable' : ''}`}

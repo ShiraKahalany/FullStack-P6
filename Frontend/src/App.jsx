@@ -14,6 +14,8 @@ import Cart from './components/Cart';
 import OrderConfirmation from './components/OrderConfirmation';
 import AdminControlPanel from './components/AdminControlPanel';
 import ManageMovies from './components/ManageMovies';
+import ManageShowtimes from './components/ManageShowtimes';
+
 function App() {
   return (
     <AuthProvider>
@@ -23,16 +25,16 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/movies" element={<Movies/>} /> {/* Replace with actual Movies component */}
-          <Route path="/movies/:movieId" element={<SelectedMovie />} />
-          <Route path="/movies/:movieId/seats" element={<SelectSeats />} />
+          <Route path="/movies" element={<Movies />} /> 
+          <Route path="/movies/:movieId/screening/:screeningId" element={<SelectedMovie />} />
           <Route path="/cart" element={<Cart />} /> 
-          <Route path="/admin" element={<PrivateRoute><AdminControlPanel /></PrivateRoute>} /> {/* Admin Control Panel */}
+          <Route path="/admin" element={<PrivateRoute><AdminControlPanel /></PrivateRoute>} /> 
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
-          <Route path="/gifts" element={<div>Gifts and Movie Cards Page</div>} /> {/* Replace with actual Gifts component */}
+          <Route path="/gifts" element={<div>Gifts and Movie Cards Page</div>} />
           <Route path="/info" element={<PrivateRoute><Info /></PrivateRoute>} />
-          <Route path="/aboutus" element={<div>About Us Page</div>} /> {/* Replace with actual About Us component */}
+          <Route path="/aboutus" element={<div>About Us Page</div>} />
           <Route path="/admin/movies" element={<PrivateRoute><ManageMovies /></PrivateRoute>} />
+          <Route path="/admin/showtimes" element={<PrivateRoute><ManageShowtimes /></PrivateRoute>} />
         </Routes>
       </Router>
     </AuthProvider>

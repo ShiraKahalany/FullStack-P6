@@ -1,37 +1,90 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import data from '../../public/data.json';  // Adjust the path accordingly
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import '../css/SelectedMovie.css';
 
 const SelectedMovie = () => {
-  const { movieId } = useParams();
-  const navigate = useNavigate();
+  const { movieId, screeningId } = useParams();
   const [movie, setMovie] = useState(null);
-  const [screenings, setScreenings] = useState([]);
+  const [screening, setScreening] = useState(null);
+  const [hall, setHall] = useState(null);
+  const [selectedSeats, setSelectedSeats] = useState([]);
 
   useEffect(() => {
-    const selectedMovie = data.movies.find(m => m.id === parseInt(movieId));
-    setMovie(selectedMovie);
-    const movieScreenings = data.screenings.filter(screening => screening.movieId === parseInt(movieId));
-    setScreenings(movieScreenings);
-  }, [movieId]);
+    axios.get(`http://localhost:5000/api/movies/${movieId}`)
+      .then(response => setMovie(response.data))
+      .catch(error => console.error('Error fetching movie:', error));
 
-  if (!movie) {
+    axios.get(`http://localhost:5000/api/screenings/${screeningId}`)
+      .then(response => {
+        setScreening(response.data);
+        return axios.get(`http://localhost:5000/api/halls/${response.data.hallId}`);
+      })
+      .then(response => setHall(response.data))
+      .catch(error => console.error('Error fetching screening or hall:', error));
+  }, [movieId, screeningId]);
+
+  const handleSeatClick = (seatNumber) => {
+    if (selectedSeats.includes(seatNumber)) {
+      setSelectedSeats(selectedSeats.filter(seat => seat !== seatNumber));
+    } else {
+      setSelectedSeats([...selectedSeats, seatNumber]);
+    }
+  };
+
+  const isSeatSelected = (seatNumber) => selectedSeats.includes(seatNumber);
+
+  const isSeatAvailable = (seatNumber) => {
+    if (!screening) return false;
+    return !screening.bookedSeats.includes(seatNumber);
+  };
+
+  const handleAddToCart = async () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user || !user.id) {
+      alert("Please log in to add tickets to your cart.");
+      return;
+    }
+
+    const newTickets = selectedSeats.map(seatNumber => ({
+      id: null,
+      userId: user.id,
+      screeningId: screeningId,
+      seatNumber: seatNumber,
+      price: 10.00,
+      isPaid: false
+    }));
+
+    try {
+      await Promise.all(newTickets.map(ticket => 
+        axios.post('http://localhost:5000/api/tickets', ticket)
+      ));
+
+      document.getElementById("cartModal").style.display = "block";
+    } catch (error) {
+      console.error('Error adding tickets to cart:', error);
+      alert("Failed to add tickets to your cart. Please try again.");
+    }
+  };
+
+  if (!movie || !screening || !hall) {
     return <div>Loading...</div>;
   }
 
-  // Convert YouTube URL to embed URL
-  const trailerUrl = movie.trailerPath.replace("watch?v=", "embed/");
-
-  const handleShowtimeClick = (screeningId) => {
-    navigate(`/movies/${movieId}/seats`, { state: { screeningId } });
-  };
+  const trailerUrl = movie.trailerPath ? movie.trailerPath.replace("watch?v=", "embed/") : '';
 
   return (
     <div className="selected-movie-container">
-      <h2>Selected Movie:</h2>
+      <div className="movie-trailer">
+        <iframe
+          src={trailerUrl}
+          title={`${movie.title} Trailer`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
       <div className="movie-details">
-        <img src={movie.imagePath} alt={movie.title} />
         <div className="movie-info">
           <h3>{movie.title}</h3>
           <p>{movie.description}</p>
@@ -40,30 +93,50 @@ const SelectedMovie = () => {
           <p><strong>Runtime:</strong> {movie.duration} minutes</p>
           <p><strong>Released On:</strong> {new Date(movie.releaseDate).toLocaleDateString()}</p>
           <p><strong>Director:</strong> {movie.director}</p>
-          <p><strong>Trailer:</strong> <a href={trailerUrl} target="_blank" rel="noopener noreferrer">Watch on YouTube</a></p>
+          <p><strong>Date:</strong> {new Date(screening.date).toLocaleDateString()}</p>
+          <p><strong>Time:</strong> {screening.time}</p>
+          <p><strong>Hall:</strong> {hall.name}</p>
         </div>
-        <div className="movie-trailer">
-          <iframe
-            width="410"
-            height="240"
-            src={trailerUrl}
-            title={`${movie.title} Trailer`}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+        <div className="movie-poster">
+          <img src={movie.imagePath} alt={movie.title} />
         </div>
       </div>
-      <h3>Showtimes</h3>
-      <div className="screenings">
-        {screenings.map(screening => (
-          <div key={screening.id} className="screening-item">
-            <span>Showtime on {new Date(screening.date).toLocaleDateString()}: </span>
-            <button className="screening-button" onClick={() => handleShowtimeClick(screening.id)}>
-              {new Date(`${screening.date}T${screening.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      <div className="seats-layout">
+        <h3>Screen</h3>
+        <div className="seats-grid">
+          {Array.from({ length: hall.capacity || 200 }, (_, index) => index + 1).map(seatNumber => (
+            <button
+              key={seatNumber}
+              className={`seat-button ${isSeatSelected(seatNumber) ? 'selected' : ''} ${!isSeatAvailable(seatNumber) ? 'unavailable' : ''}`}
+              onClick={() => isSeatAvailable(seatNumber) && handleSeatClick(seatNumber)}
+              disabled={!isSeatAvailable(seatNumber)}
+            >
+              {seatNumber}
             </button>
+          ))}
+        </div>
+      </div>
+      <div className="selected-tickets">
+        <h3>Tickets:</h3>
+        <div className="tickets-container">
+          {selectedSeats.map((seat, index) => (
+            <div key={index} className="ticket-info">
+              <p><strong>Seat Number:</strong> {seat}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <button className="add-ticket-button" onClick={handleAddToCart}>Add Tickets to Order</button>
+
+      {/* Modal */}
+      <div id="cartModal" className="modal">
+        <div className="modal-content">
+          <h2>Tickets successfully added to your cart!</h2>
+          <div className="modal-buttons">
+            <button onClick={() => window.location.href = "/cart"}>Go to Cart</button>
+            <button onClick={() => window.location.href = "/movies"}>Back to Movies</button>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

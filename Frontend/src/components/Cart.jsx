@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import '../css/Cart.css';
-import data from '../../public/data.json'; // Adjust the path
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -11,25 +13,72 @@ const Cart = () => {
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
   const [error, setError] = useState('');
-  const taxRate = 0.07; // Example tax rate of 7%
+  const taxRate = 0.07;
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedCartItems = JSON.parse(localStorage.getItem('cart')) || [];
-    setCartItems(storedCartItems);
-    const subtotal = storedCartItems.reduce((acc, item) => acc + item.price, 0);
-    setSubtotal(subtotal);
+    const fetchCartItems = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.id) {
+          alert("Please log in to view your cart.");
+          return;
+        }
+
+        const response = await axios.get('http://localhost:5000/api/tickets');
+        const allTickets = response.data;
+
+        const userTickets = allTickets.filter(ticket => ticket.userId === user.id && !ticket.isPaid);
+
+        const ticketsWithDetails = await Promise.all(userTickets.map(async (ticket) => {
+          const screeningResponse = await axios.get(`http://localhost:5000/api/screenings/${ticket.screeningId}`);
+          const screening = screeningResponse.data;
+
+          const movieResponse = await axios.get(`http://localhost:5000/api/movies/${screening.movieId}`);
+          const movie = movieResponse.data;
+
+          const hallResponse = await axios.get(`http://localhost:5000/api/halls/${screening.hallId}`);
+          const hall = hallResponse.data;
+
+          return {
+            ...ticket,
+            movieTitle: movie.title,
+            date: new Date(screening.date).toLocaleDateString('en-US'),
+            time: screening.time.slice(0, 5),  // Only the first 5 characters 'HH:MM'
+            hall: hall.name
+          };
+        }));
+
+        if (ticketsWithDetails.length > 0) {
+          setCartItems(ticketsWithDetails);
+          const subtotal = ticketsWithDetails.reduce((acc, item) => acc + (Number(item.price) || 0), 0);
+          setSubtotal(subtotal);
+        } else {
+          setCartItems([]);
+          setSubtotal(0);
+        }
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+      }
+    };
+
+    fetchCartItems();
   }, []);
 
-  const handleRemoveItem = (ticketId) => {
-    const updatedCartItems = cartItems.filter(item => item.id !== ticketId);
-    setCartItems(updatedCartItems);
-    localStorage.setItem('cart', JSON.stringify(updatedCartItems));
-    const subtotal = updatedCartItems.reduce((acc, item) => acc + item.price, 0);
-    setSubtotal(subtotal);
+  const handleRemoveItem = async (ticketId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/tickets/${ticketId}`);
+      const updatedCartItems = cartItems.filter(item => item.id !== ticketId);
+      setCartItems(updatedCartItems);
+      const subtotal = updatedCartItems.reduce((acc, item) => acc + (Number(item.price) || 0), 0);
+      setSubtotal(subtotal);
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
   };
 
-  const total = parseFloat((subtotal + subtotal * taxRate).toFixed(2));
+  const totalRaw = subtotal + subtotal * taxRate;
+  const total = parseFloat(totalRaw).toFixed(2);
 
   const validatePaymentDetails = () => {
     const cardNumberRegex = /^\d{16}$/;
@@ -62,33 +111,35 @@ const Cart = () => {
     return true;
   };
 
-  const handleSubmitOrder = () => {
+  const handleSubmitOrder = async () => {
     setError('');
     if (!validatePaymentDetails()) return;
 
-    const orderId = data.orders.length ? data.orders[data.orders.length - 1].orderId + 1 : 100000000;
-    const userId = JSON.parse(localStorage.getItem('user')).id;
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const newOrder = {
+        userId: user.id,
+        items: cartItems.map(item => ({
+          screeningId: item.screeningId,
+          seatNumber: item.seatNumber,
+          price: item.price
+        })),
+        totalPrice: total,
+        date: new Date().toISOString().split('T')[0]
+      };
 
-    const newOrder = {
-      orderId,
-      userId,
-      items: cartItems.map(item => ({
-        screeningId: item.screeningId,
-        seatNumber: item.seatNumber,
-        price: item.price
-      })),
-      totalPrice: total,
-      date: new Date().toISOString().split('T')[0]
-    };
+      await axios.post('http://localhost:5000/api/orders', newOrder);
 
-    data.orders.push(newOrder);
-    console.log('Order placed:', data);
+      await Promise.all(cartItems.map(item => axios.put(`http://localhost:5000/api/tickets/${item.id}`, { ...item, isPaid: true })));
 
-    // Empty the cart after placing the order
-    setCartItems([]);
-    localStorage.setItem('cart', JSON.stringify([]));
+      setCartItems([]);
+      localStorage.setItem('cart', JSON.stringify([]));
 
-    navigate('/order-confirmation', { state: { orderId } });
+      navigate('/order-confirmation', { state: { orderId: newOrder.orderId } });
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      setError('Failed to submit order. Please try again.');
+    }
   };
 
   return (
@@ -116,14 +167,16 @@ const Cart = () => {
             <tbody>
               {cartItems.map((item, index) => (
                 <tr key={index}>
-                  <td>{item.ticketId}</td>
+                  <td>{item.id}</td>
                   <td>{item.movieTitle}</td>
                   <td>{`${item.date} ${item.time}`}</td>
                   <td>{item.hall}</td>
                   <td>{item.seatNumber}</td>
-                  <td>${item.price.toFixed(2)}</td>
+                  <td>${(Number(item.price) || 0).toFixed(2)}</td>
                   <td>
-                    <button onClick={() => handleRemoveItem(item.id)} className="remove-button">Remove</button>
+                    <button onClick={() => handleRemoveItem(item.id)} className="remove-button">
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -137,7 +190,7 @@ const Cart = () => {
             <div className="totals">
               <p>Subtotal: ${subtotal.toFixed(2)}</p>
               <p>Tax (${(taxRate * 100).toFixed(2)}%): ${((subtotal * taxRate).toFixed(2))}</p>
-              <h3>Order Total: ${total.toFixed(2)}</h3>
+              <h3>Order Total: ${total}</h3>
             </div>
           </div>
           <div className="payment-info">

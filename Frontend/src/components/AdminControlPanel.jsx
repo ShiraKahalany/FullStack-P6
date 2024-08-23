@@ -14,7 +14,7 @@ const AdminControlPanel = () => {
           <FontAwesomeIcon icon={faFilm} className="admin-icon purple" />
           <p>Manage Movies</p>
         </div>
-        <div className="admin-action">
+        <div className="admin-action" onClick={() => navigate('/admin/showtimes')}>
           <FontAwesomeIcon icon={faClock} className="admin-icon purple" />
           <p>Manage Show Times</p>
         </div>

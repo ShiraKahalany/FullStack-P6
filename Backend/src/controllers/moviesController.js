@@ -46,3 +46,11 @@ const deleteMovie = (req, res) => {
 };
 
 module.exports = { getAllMovies, getMovieById, createMovie, updateMovie, deleteMovie };
+
+
+// 200 OK for successful GET or PUT requests.
+// 201 Created for successful POST requests.
+// 204 No Content for successful DELETE requests.
+// 400 Bad Request for validation errors or bad input.
+// 404 Not Found for resources that cannot be found.
+// 500 Internal Server Error for server-side issues
