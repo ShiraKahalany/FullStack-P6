@@ -25,11 +25,15 @@ const Cart = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:5000/api/tickets');
-        const allTickets = response.data;
+        // const response = await axios.get('http://localhost:5000/api/tickets');
+        // const allTickets = response.data;
 
-        const userTickets = allTickets.filter(ticket => ticket.userId === user.id && !ticket.isPaid);
+        // const userTickets = allTickets.filter(ticket => ticket.userId === user.id && !ticket.isPaid);
 
+        const response = await axios.get('http://localhost:5000/api/tickets/user' , { params: { userId: user.id, isPaid: 0 } });
+        console.log('User tickets:', response.data); // Debugging
+        const userTickets = response.data;
+        
         const ticketsWithDetails = await Promise.all(userTickets.map(async (ticket) => {
           const screeningResponse = await axios.get(`http://localhost:5000/api/screenings/${ticket.screeningId}`);
           const screening = screeningResponse.data;
@@ -116,31 +120,67 @@ const Cart = () => {
     if (!validatePaymentDetails()) return;
 
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const newOrder = {
-        userId: user.id,
-        items: cartItems.map(item => ({
-          screeningId: item.screeningId,
-          seatNumber: item.seatNumber,
-          price: item.price
-        })),
-        totalPrice: total,
-        date: new Date().toISOString().split('T')[0]
-      };
+        const user = JSON.parse(localStorage.getItem('user'));
 
-      await axios.post('http://localhost:5000/api/orders', newOrder);
+        // Create a string with the IDs of all tickets in the cart
+        const ticketIds = cartItems.map(item => item.id);
 
-      await Promise.all(cartItems.map(item => axios.put(`http://localhost:5000/api/tickets/${item.id}`, { ...item, isPaid: true })));
+        // Calculate the total price without the tax
+        const totalPriceWithoutTax = subtotal;
 
-      setCartItems([]);
-      localStorage.setItem('cart', JSON.stringify([]));
+        // Format today's date as 'YYYY-MM-DD'
+        const today = new Date().toISOString().split('T')[0];
 
-      navigate('/order-confirmation', { state: { orderId: newOrder.orderId } });
+        // Create the new order object
+        const newOrder = {
+            orderId: null,  // The backend will assign this ID
+            userId: user.id,
+            items: JSON.stringify(ticketIds),  // Store ticket IDs as a stringified array
+            totalPrice: totalPriceWithoutTax,
+            date: today
+        };
+
+        // Send a request to create a new order
+        const response = await axios.post('http://localhost:5000/api/orders', newOrder);
+
+        // Update each ticket to set isPaid to true and update bookedSeats for each screening
+        await Promise.all(cartItems.map(async item => {
+            // Mark the ticket as paid
+            await axios.put(`http://localhost:5000/api/tickets/${item.id}`, { ...item, isPaid: true });
+
+            // Fetch the current bookedSeats for the screening
+            const screeningResponse = await axios.get(`http://localhost:5000/api/screenings/${item.screeningId}`);
+            const screening = screeningResponse.data;
+            
+            // Ensure bookedSeats is valid JSON before parsing
+            let bookedSeats = [];
+            if (screening.bookedSeats && screening.bookedSeats.trim() !== '') {
+                bookedSeats = JSON.parse(screening.bookedSeats);
+            }
+
+            // Add the current seatNumber to the bookedSeats array
+            bookedSeats.push(item.seatNumber);
+
+            // Update the screening with the new bookedSeats
+            console.log('bookedSeats:', bookedSeats);
+            await axios.put(`http://localhost:5000/api/screenings/${item.screeningId}`, { ...screening, bookedSeats: JSON.stringify(bookedSeats) });
+        }));
+
+        // Empty the cart after placing the order
+        setCartItems([]);
+        localStorage.setItem('cart', JSON.stringify([]));
+
+        // Redirect to the order confirmation page with the orderId
+        navigate('/order-confirmation', { state: { orderId: response.data.orderId } });
     } catch (error) {
-      console.error('Error submitting order:', error);
-      setError('Failed to submit order. Please try again.');
+        console.error('Error submitting order:', error);
+        setError('Failed to submit order. Please try again.');
     }
-  };
+};
+
+
+  
+
 
   return (
     <div className="cart-container">

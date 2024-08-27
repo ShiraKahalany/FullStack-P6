@@ -19,12 +19,52 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
   const { userID, username, password, email, isAdmin } = req.body;
-  const sql = 'INSERT INTO users (userID, username, password, email, isAdmin) VALUES (?, ?, ?, ?, ?)';
-  db.query(sql, [userID, username, password, email, isAdmin], (err, results) => {
+
+  db.beginTransaction((err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ message: 'User created', userId: results.insertId });
+
+    const getRunningIdSql = 'SELECT current_value FROM running_id WHERE entity_name = "user_id" FOR UPDATE';
+    db.query(getRunningIdSql, (err, results) => {
+      if (err) {
+        return db.rollback(() => {
+          return res.status(500).json({ error: err.message });
+        });
+      }
+
+      const currentId = results[0].current_value;
+      const newUserId = currentId + 1;
+
+      const insertUserSql = 'INSERT INTO users (id, userID, username, password, email, isAdmin) VALUES (?, ?, ?, ?, ?, ?)';
+      db.query(insertUserSql, [newUserId, userID, username, password, email, isAdmin], (err, results) => {
+        if (err) {
+          return db.rollback(() => {
+            return res.status(500).json({ error: err.message });
+          });
+        }
+
+        const updateRunningIdSql = 'UPDATE running_id SET current_value = ? WHERE entity_name = "user_id"';
+        db.query(updateRunningIdSql, [newUserId], (err, results) => {
+          if (err) {
+            return db.rollback(() => {
+              return res.status(500).json({ error: err.message });
+            });
+          }
+
+          db.commit((err) => {
+            if (err) {
+              return db.rollback(() => {
+                return res.status(500).json({ error: err.message });
+              });
+            }
+
+            res.status(201).json({ message: 'User created', userId: newUserId });
+          });
+        });
+      });
+    });
   });
 };
+
 
 const updateUser = (req, res) => {
   const { id } = req.params;

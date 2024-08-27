@@ -19,12 +19,52 @@ const getMovieById = (req, res) => {
 
 const createMovie = (req, res) => {
   const { title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath } = req.body;
-  const sql = 'INSERT INTO movies (title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  db.query(sql, [title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath], (err, results) => {
+
+  db.beginTransaction((err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ message: 'Movie created', movieId: results.insertId });
+
+    const getRunningIdSql = 'SELECT current_value FROM running_id WHERE entity_name = "movie_id" FOR UPDATE';
+    db.query(getRunningIdSql, (err, results) => {
+      if (err) {
+        return db.rollback(() => {
+          return res.status(500).json({ error: err.message });
+        });
+      }
+
+      const currentId = results[0].current_value;
+      const newMovieId = currentId + 1;
+
+      const insertMovieSql = 'INSERT INTO movies (id, title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      db.query(insertMovieSql, [newMovieId, title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath], (err, results) => {
+        if (err) {
+          return db.rollback(() => {
+            return res.status(500).json({ error: err.message });
+          });
+        }
+
+        const updateRunningIdSql = 'UPDATE running_id SET current_value = ? WHERE entity_name = "movie_id"';
+        db.query(updateRunningIdSql, [newMovieId], (err, results) => {
+          if (err) {
+            return db.rollback(() => {
+              return res.status(500).json({ error: err.message });
+            });
+          }
+
+          db.commit((err) => {
+            if (err) {
+              return db.rollback(() => {
+                return res.status(500).json({ error: err.message });
+              });
+            }
+
+            res.status(201).json({ message: 'Movie created', movieId: newMovieId });
+          });
+        });
+      });
+    });
   });
 };
+
 
 const updateMovie = (req, res) => {
   const { id } = req.params;

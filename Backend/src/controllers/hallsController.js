@@ -19,12 +19,52 @@ const getHallById = (req, res) => {
 
 const createHall = (req, res) => {
   const { name, capacity } = req.body;
-  const sql = 'INSERT INTO halls (name, capacity) VALUES (?, ?)';
-  db.query(sql, [name, capacity], (err, results) => {
+
+  db.beginTransaction((err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ message: 'Hall created', hallId: results.insertId });
+
+    const getRunningIdSql = 'SELECT current_value FROM running_id WHERE entity_name = "halls_id" FOR UPDATE';
+    db.query(getRunningIdSql, (err, results) => {
+      if (err) {
+        return db.rollback(() => {
+          return res.status(500).json({ error: err.message });
+        });
+      }
+
+      const currentId = results[0].current_value;
+      const newHallId = currentId + 1;
+
+      const insertHallSql = 'INSERT INTO halls (id, name, capacity) VALUES (?, ?, ?)';
+      db.query(insertHallSql, [newHallId, name, capacity], (err, results) => {
+        if (err) {
+          return db.rollback(() => {
+            return res.status(500).json({ error: err.message });
+          });
+        }
+
+        const updateRunningIdSql = 'UPDATE running_id SET current_value = ? WHERE entity_name = "halls_id"';
+        db.query(updateRunningIdSql, [newHallId], (err, results) => {
+          if (err) {
+            return db.rollback(() => {
+              return res.status(500).json({ error: err.message });
+            });
+          }
+
+          db.commit((err) => {
+            if (err) {
+              return db.rollback(() => {
+                return res.status(500).json({ error: err.message });
+              });
+            }
+
+            res.status(201).json({ message: 'Hall created', hallId: newHallId });
+          });
+        });
+      });
+    });
   });
 };
+
 
 const updateHall = (req, res) => {
   const { id } = req.params;

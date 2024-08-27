@@ -1,6 +1,17 @@
 const db = require('../config');
 
-/****************************** GET ******************************/ 
+/****************************** GET ******************************/
+
+// Function to get all booked seats for a given screening ID
+const getBookedSeatsForScreening = (req, res) => {
+  const { screeningId } = req.params;
+  const sql = 'SELECT seatNumber FROM tickets WHERE screeningId = ? AND isPaid = true';
+  db.query(sql, [screeningId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const bookedSeats = results.map(ticket => ticket.seatNumber); // Extract seat numbers from results
+    res.json(bookedSeats);
+  });
+};
 
 const getAllTickets = (req, res) => {
   const sql = 'SELECT * FROM tickets';
@@ -23,24 +34,21 @@ const getTicketsByUserAndPaymentStatus = (req, res) => {
   const { userId, isPaid } = req.query;
 
   // Convert isPaid to a number (0 or 1) based on the incoming string
-  const isPaidValue = 0;
+  const isPaidValue = isPaid === 'true' ? 1 : 0;
   
-  console.log('Query Parameters:', { userId, isPaidValue });
-
   const sql = 'SELECT * FROM tickets WHERE userId = ? AND isPaid = ?';
   db.query(sql, [userId, isPaidValue], (err, results) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: err.message });
     }
-    console.log('Query Results:', results);
     res.json(results);
   });
 };
 
-
 /****************************** POST ******************************/ 
 
+// Function to create a ticket
 const createTicket = (req, res) => {
   const { userId, screeningId, seatNumber, price, isPaid } = req.body;
 
@@ -94,7 +102,6 @@ const createTicket = (req, res) => {
   });
 };
 
-
 /****************************** UPDATE ******************************/ 
 
 const updateTicket = (req, res) => {
@@ -107,7 +114,6 @@ const updateTicket = (req, res) => {
   });
 };
 
-
 /****************************** DELETE ******************************/ 
 
 const deleteTicket = (req, res) => {
@@ -119,4 +125,12 @@ const deleteTicket = (req, res) => {
   });
 };
 
-module.exports = { getAllTickets, getTicketById, getTicketsByUserAndPaymentStatus, createTicket, updateTicket, deleteTicket };
+module.exports = { 
+  getAllTickets, 
+  getTicketById, 
+  getTicketsByUserAndPaymentStatus, 
+  getBookedSeatsForScreening,  // Export the new function
+  createTicket, 
+  updateTicket, 
+  deleteTicket 
+};

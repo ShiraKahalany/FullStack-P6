@@ -9,12 +9,15 @@ const SelectedMovie = () => {
   const [screening, setScreening] = useState(null);
   const [hall, setHall] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [unavailableSeats, setUnavailableSeats] = useState([]);
 
   useEffect(() => {
+    // Fetch movie details
     axios.get(`http://localhost:5000/api/movies/${movieId}`)
       .then(response => setMovie(response.data))
       .catch(error => console.error('Error fetching movie:', error));
-
+  
+    // Fetch screening and hall details
     axios.get(`http://localhost:5000/api/screenings/${screeningId}`)
       .then(response => {
         setScreening(response.data);
@@ -22,7 +25,15 @@ const SelectedMovie = () => {
       })
       .then(response => setHall(response.data))
       .catch(error => console.error('Error fetching screening or hall:', error));
+  
+    // Fetch unavailable seats for the screening
+    axios.get(`http://localhost:5000/api/tickets/screening/${screeningId}`)
+      .then(response => {
+        setUnavailableSeats(response.data);
+      })
+      .catch(error => console.error('Error fetching booked seats:', error));
   }, [movieId, screeningId]);
+  
 
   const handleSeatClick = (seatNumber) => {
     if (selectedSeats.includes(seatNumber)) {
@@ -35,8 +46,7 @@ const SelectedMovie = () => {
   const isSeatSelected = (seatNumber) => selectedSeats.includes(seatNumber);
 
   const isSeatAvailable = (seatNumber) => {
-    if (!screening) return false;
-    return !screening.bookedSeats.includes(seatNumber);
+    return !unavailableSeats.includes(seatNumber);
   };
 
   const handleAddToCart = async () => {
@@ -46,6 +56,7 @@ const SelectedMovie = () => {
       return;
     }
 
+    // Prepare the new tickets
     const newTickets = selectedSeats.map(seatNumber => ({
       id: null,
       userId: user.id,
@@ -56,10 +67,12 @@ const SelectedMovie = () => {
     }));
 
     try {
-      await Promise.all(newTickets.map(ticket => 
-        axios.post('http://localhost:5000/api/tickets', ticket)
-      ));
+      // Process each ticket creation request sequentially
+      for (const ticket of newTickets) {
+        await axios.post('http://localhost:5000/api/tickets', ticket);
+      }
 
+      // After successfully adding all tickets, show the confirmation modal
       document.getElementById("cartModal").style.display = "block";
     } catch (error) {
       console.error('Error adding tickets to cart:', error);
