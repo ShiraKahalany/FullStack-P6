@@ -135,10 +135,11 @@ const Cart = () => {
         const newOrder = {
             orderId: null,  // The backend will assign this ID
             userId: user.id,
-            items: JSON.stringify(ticketIds),  // Store ticket IDs as a stringified array
+            items: JSON.stringify(ticketIds),  // Store ticket IDs as a JSON stringified array
             totalPrice: totalPriceWithoutTax,
             date: today
         };
+        console.log('New order:', newOrder);
 
         // Send a request to create a new order
         const response = await axios.post('http://localhost:5000/api/orders', newOrder);
@@ -160,10 +161,6 @@ const Cart = () => {
 
             // Add the current seatNumber to the bookedSeats array
             bookedSeats.push(item.seatNumber);
-
-            // Update the screening with the new bookedSeats
-            console.log('bookedSeats:', bookedSeats);
-            await axios.put(`http://localhost:5000/api/screenings/${item.screeningId}`, { ...screening, bookedSeats: JSON.stringify(bookedSeats) });
         }));
 
         // Empty the cart after placing the order
@@ -177,6 +174,7 @@ const Cart = () => {
         setError('Failed to submit order. Please try again.');
     }
 };
+
 
 
   

@@ -1,5 +1,7 @@
 const db = require('../config');
 
+/****************************** GET ******************************/
+
 const getAllOrders = (req, res) => {
   const sql = 'SELECT * FROM orders';
   db.query(sql, (err, results) => {
@@ -17,27 +19,30 @@ const getOrderById = (req, res) => {
   });
 };
 
-const createOrder = (req, res) => {
-  const { userId, items, totalPrice, date } = req.body;
-  
-  const parsedItems = JSON.parse(items); // Convert items to an array if it’s stored as a JSON string
 
-  db.beginTransaction((err) => {
-    if (err) return res.status(500).json({ error: err.message });
+/****************************** CREATE ******************************/
 
-    // Step 1: Check if any of the tickets in 'items' are already in another order
+
+// Utility function to parse items from the request body
+const parseItems = (items) => {
+  if (typeof items === 'string') {
+    try {
+      return JSON.parse(items);
+    } catch (error) {
+      throw new Error('Invalid format for items');
+    }
+  }
+  return items;
+};
+
+// Utility function to check for conflicting tickets
+const checkForConflictingTickets = (parsedItems) => {
+  return new Promise((resolve, reject) => {
     const checkTicketsSql = 'SELECT orderId, items FROM orders';
     db.query(checkTicketsSql, (err, results) => {
-      if (err) {
-        return db.rollback(() => {
-          return res.status(500).json({ error: err.message });
-        });
-      }
+      if (err) return reject(err);
 
-      // Initialize an array to keep track of conflicting tickets
       let conflictingTickets = [];
-
-      // Check if any of the tickets in the current order are already in another order
       results.forEach(order => {
         const existingItems = JSON.parse(order.items);
         const overlap = existingItems.filter(item => parsedItems.includes(item));
@@ -47,62 +52,101 @@ const createOrder = (req, res) => {
       });
 
       if (conflictingTickets.length > 0) {
-        // If any tickets are found in another order, rollback and send an error response
-        return db.rollback(() => {
-          return res.status(400).json({ 
-            error: 'Some tickets are already associated with another order.',
-            conflictingTickets: conflictingTickets 
-          });
+        return reject({
+          error: 'Some tickets are already associated with another order.',
+          conflictingTickets: conflictingTickets
         });
       }
 
-      // Step 2: Get the current value of the running ID for orders
-      const getRunningIdSql = 'SELECT current_value FROM running_id WHERE entity_name = "orders_id" FOR UPDATE';
-      db.query(getRunningIdSql, (err, results) => {
+      resolve();
+    });
+  });
+};
+
+// Utility function to generate a new order ID
+const generateOrderId = () => {
+  return new Promise((resolve, reject) => {
+    const getRunningIdSql = 'SELECT current_value FROM running_id WHERE entity_name = "orders_id" FOR UPDATE';
+    db.query(getRunningIdSql, (err, results) => {
+      if (err) return reject(err);
+
+      const currentId = results[0].current_value;
+      const newOrderId = currentId + 1;
+      resolve(newOrderId);
+    });
+  });
+};
+
+// Utility function to insert a new order
+const insertOrder = (newOrderId, userId, parsedItems, totalPrice, date) => {
+  return new Promise((resolve, reject) => {
+    const insertOrderSql = 'INSERT INTO orders (orderId, userId, items, totalPrice, date) VALUES (?, ?, ?, ?, ?)';
+    db.query(insertOrderSql, [newOrderId, userId, JSON.stringify(parsedItems), totalPrice, date], (err, results) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+};
+
+// Utility function to update the running ID
+const updateRunningId = (newOrderId) => {
+  return new Promise((resolve, reject) => {
+    const updateRunningIdSql = 'UPDATE running_id SET current_value = ? WHERE entity_name = "orders_id"';
+    db.query(updateRunningIdSql, [newOrderId], (err, results) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+};
+
+// Main createOrder function
+const createOrder = (req, res) => {
+  const { userId, items, totalPrice, date } = req.body;
+
+  let parsedItems;
+  try {
+    parsedItems = parseItems(items);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  db.beginTransaction(async (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    try {
+      // Step 1: Validate tickets
+      // await checkForConflictingTickets(parsedItems);
+
+      // Step 2: Generate a new order ID
+      const newOrderId = await generateOrderId();
+
+      // Step 3: Insert the new order
+      await insertOrder(newOrderId, userId, parsedItems, totalPrice, date);
+
+      // Step 4: Update the running ID
+      await updateRunningId(newOrderId);
+
+      // Step 5: Commit the transaction
+      db.commit((err) => {
         if (err) {
           return db.rollback(() => {
             return res.status(500).json({ error: err.message });
           });
         }
 
-        const currentId = results[0].current_value;
-        const newOrderId = currentId + 1;
-
-        // Step 3: Insert the new order with the retrieved ID
-        const insertOrderSql = 'INSERT INTO orders (orderId, userId, items, totalPrice, date) VALUES (?, ?, ?, ?, ?)';
-        db.query(insertOrderSql, [newOrderId, userId, JSON.stringify(parsedItems), totalPrice, date], (err, results) => {
-          if (err) {
-            return db.rollback(() => {
-              return res.status(500).json({ error: err.message });
-            });
-          }
-
-          // Step 4: Update the running ID in the running_id table
-          const updateRunningIdSql = 'UPDATE running_id SET current_value = ? WHERE entity_name = "orders_id"';
-          db.query(updateRunningIdSql, [newOrderId], (err, results) => {
-            if (err) {
-              return db.rollback(() => {
-                return res.status(500).json({ error: err.message });
-              });
-            }
-
-            // Step 5: Commit the transaction
-            db.commit((err) => {
-              if (err) {
-                return db.rollback(() => {
-                  return res.status(500).json({ error: err.message });
-                });
-              }
-
-              res.status(201).json({ message: 'Order created', orderId: newOrderId });
-            });
-          });
-        });
+        res.status(201).json({ message: 'Order created', orderId: newOrderId });
       });
-    });
+
+    } catch (error) {
+      db.rollback(() => {
+        if (error.conflictingTickets) {
+          return res.status(400).json(error);
+        }
+        return res.status(500).json({ error: error.message });
+      });
+    }
   });
 };
-
 
 const updateOrder = (req, res) => {
   const { id } = req.params;
@@ -150,6 +194,5 @@ const deleteOrder = (req, res) => {
     }
   });
 };
-
 
 module.exports = { getAllOrders, getOrderById, createOrder, updateOrder, deleteOrder };
