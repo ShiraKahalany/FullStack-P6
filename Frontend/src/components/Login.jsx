@@ -23,11 +23,6 @@ const Login = () => {
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
 
-        // Fetch the user's cart from the backend
-        const cartResponse = await axios.get(`http://localhost:5000/api/carts/${user.id}`);
-        const userCart = cartResponse.data;
-        localStorage.setItem('cart', JSON.stringify(userCart ? userCart.items : []));
-
         navigate('/');
       } else {
         setError('Invalid email or password');

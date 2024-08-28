@@ -76,14 +76,64 @@ const updateMovie = (req, res) => {
   });
 };
 
+
+
 const deleteMovie = (req, res) => {
   const { id } = req.params;
-  const sql = 'DELETE FROM movies WHERE id = ?';
-  db.query(sql, [id], (err, results) => {
+
+  // Start a transaction to ensure atomicity
+  db.beginTransaction((err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'Movie deleted' });
+
+    // Step 1: Delete all tickets associated with the movie screenings
+    const deleteTicketsSql = `
+      DELETE tickets 
+      FROM tickets 
+      JOIN screenings ON tickets.screeningId = screenings.id 
+      WHERE screenings.movieId = ?`;
+
+    db.query(deleteTicketsSql, [id], (err, results) => {
+      if (err) {
+        return db.rollback(() => {
+          return res.status(500).json({ error: err.message });
+        });
+      }
+
+      // Step 2: Delete all screenings associated with the movie
+      const deleteScreeningsSql = 'DELETE FROM screenings WHERE movieId = ?';
+
+      db.query(deleteScreeningsSql, [id], (err, results) => {
+        if (err) {
+          return db.rollback(() => {
+            return res.status(500).json({ error: err.message });
+          });
+        }
+
+        // Step 3: Delete the movie itself
+        const deleteMovieSql = 'DELETE FROM movies WHERE id = ?';
+
+        db.query(deleteMovieSql, [id], (err, results) => {
+          if (err) {
+            return db.rollback(() => {
+              return res.status(500).json({ error: err.message });
+            });
+          }
+
+          // Commit the transaction
+          db.commit((err) => {
+            if (err) {
+              return db.rollback(() => {
+                return res.status(500).json({ error: err.message });
+              });
+            }
+            res.json({ message: 'Movie and all related data deleted' });
+          });
+        });
+      });
+    });
   });
 };
+
 
 module.exports = { getAllMovies, getMovieById, createMovie, updateMovie, deleteMovie };
 

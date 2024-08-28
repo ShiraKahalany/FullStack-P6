@@ -148,6 +148,9 @@ const createOrder = (req, res) => {
   });
 };
 
+
+/****************************** UPDATE ******************************/
+
 const updateOrder = (req, res) => {
   const { id } = req.params;
   const { userId, items, totalPrice, date } = req.body;

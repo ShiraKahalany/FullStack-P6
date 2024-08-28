@@ -33,9 +33,9 @@ const createUser = (req, res) => {
 
       const currentId = results[0].current_value;
       const newUserId = currentId + 1;
-
-      const insertUserSql = 'INSERT INTO users (id, userID, username, password, email, isAdmin) VALUES (?, ?, ?, ?, ?, ?)';
-      db.query(insertUserSql, [newUserId, userID, username, password, email, isAdmin], (err, results) => {
+      console.log("newUserId:",newUserId);
+      const insertUserSql = 'INSERT INTO users (id, username, password, email, isAdmin) VALUES (?, ?, ?, ?, ?)';
+      db.query(insertUserSql, [newUserId, username, password, email, isAdmin], (err, results) => {
         if (err) {
           return db.rollback(() => {
             return res.status(500).json({ error: err.message });

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../css/Register.css'; // השתמשי באותו קובץ CSS של ה-Login
 
 const Register = () => {
@@ -20,7 +21,7 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // בדיקת סיסמאות תואמות
@@ -42,17 +43,21 @@ const Register = () => {
       return;
     }
 
-    // שמירת המשתמש ב-Local Storage (במקום API)
-    const newUser = {
-      id: Date.now(),
-      username: formData.username,
-      password: formData.password,
-      email: formData.email,
-      isAdmin: false
-    };
+    try {
+      const response = await axios.post('http://localhost:5000/api/users', {
+        username: formData.username,
+        password: formData.password,
+        email: formData.email,
+        isAdmin: false
+      });
 
-    localStorage.setItem('user', JSON.stringify(newUser));
-    navigate('/login');
+      if (response.status === 201) {
+        navigate('/login');
+      }
+    } catch (error) {
+      setError('Failed to register user. Please try again later.');
+      console.error('There was an error registering the user:', error);
+    }
   };
 
   return (

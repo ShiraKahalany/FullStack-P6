@@ -9,26 +9,8 @@ function NavBar() {
   const user = JSON.parse(localStorage.getItem('user'));
 
   const handleLogout = () => {
-    // Check for items in the cart
-    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-
-    if (cartItems.length > 0) {
-      // Find the user's cart in the data.json and update their items
-      const userCart = data.carts.find(cart => cart.userId === user.id);
-
-      if (userCart) {
-        // Add the items to the user's cart in data.json
-        userCart.items = [...userCart.items, ...cartItems];
-
-        // Simulate saving the updated data.json
-        // In a real application, this would be an API call to update the backend
-        console.log("Updated data.json:", JSON.stringify(data, null, 2));
-      }
-    }
-
     // Clear localStorage
     localStorage.removeItem('user');
-    localStorage.removeItem('cart');
 
     // Redirect to login page
     navigate('/login');
@@ -52,11 +34,11 @@ function NavBar() {
             <Link to="/cart">
               <FontAwesomeIcon icon={faShoppingCart} size="lg" />
             </Link>
-            {user.isAdmin && (
+            {user.isAdmin ? (
               <Link to="/admin">
                 <FontAwesomeIcon icon={faShieldAlt} size="lg" />
               </Link>
-            )}
+            ) : null}
             <button onClick={handleLogout}>Logout</button>
           </>
         ) : (

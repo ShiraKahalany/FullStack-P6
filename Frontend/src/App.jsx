@@ -15,6 +15,8 @@ import OrderConfirmation from './components/OrderConfirmation';
 import AdminControlPanel from './components/AdminControlPanel';
 import ManageMovies from './components/ManageMovies';
 import ManageShowtimes from './components/ManageShowtimes';
+import EditMovie from './components/EditMovie';
+import AddMovie from './components/AddMovie';
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
           <Route path="/info" element={<PrivateRoute><Info /></PrivateRoute>} />
           <Route path="/aboutus" element={<div>About Us Page</div>} />
           <Route path="/admin/movies" element={<PrivateRoute><ManageMovies /></PrivateRoute>} />
+          <Route path="/admin/movies/edit-movie/:movieId" element={<EditMovie />} />
+          <Route path="/admin/movies/add-movie" element={<AddMovie />} />
           <Route path="/admin/showtimes" element={<PrivateRoute><ManageShowtimes /></PrivateRoute>} />
         </Routes>
       </Router>
