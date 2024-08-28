@@ -24,7 +24,6 @@ const EditMovie = () => {
     event.preventDefault();
     const updatedMovie = {
       title: event.target.title.value,
-      rating: movie.rating,
       description: event.target.description.value,
       duration: event.target.duration.value,
       genre: event.target.genre.value,

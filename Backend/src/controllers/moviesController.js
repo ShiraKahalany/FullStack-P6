@@ -18,7 +18,7 @@ const getMovieById = (req, res) => {
 };
 
 const createMovie = (req, res) => {
-  const { title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath } = req.body;
+  const { title, description, duration, genre, director, releaseDate, trailerPath, imagePath } = req.body;
 
   db.beginTransaction((err) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -34,8 +34,8 @@ const createMovie = (req, res) => {
       const currentId = results[0].current_value;
       const newMovieId = currentId + 1;
 
-      const insertMovieSql = 'INSERT INTO movies (id, title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-      db.query(insertMovieSql, [newMovieId, title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath], (err, results) => {
+      const insertMovieSql = 'INSERT INTO movies (id, title, description, duration, genre, director, releaseDate, trailerPath, imagePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      db.query(insertMovieSql, [newMovieId, title, description, duration, genre, director, releaseDate, trailerPath, imagePath], (err, results) => {
         if (err) {
           return db.rollback(() => {
             return res.status(500).json({ error: err.message });
@@ -68,9 +68,9 @@ const createMovie = (req, res) => {
 
 const updateMovie = (req, res) => {
   const { id } = req.params;
-  const { title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath } = req.body;
-  const sql = 'UPDATE movies SET title = ?, description = ?, duration = ?, genre = ?, rating = ?, director = ?, releaseDate = ?, trailerPath = ?, imagePath = ? WHERE id = ?';
-  db.query(sql, [title, description, duration, genre, rating, director, releaseDate, trailerPath, imagePath, id], (err, results) => {
+  const { title, description, duration, genre, director, releaseDate, trailerPath, imagePath } = req.body;
+  const sql = 'UPDATE movies SET title = ?, description = ?, duration = ?, genre = ?, director = ?, releaseDate = ?, trailerPath = ?, imagePath = ? WHERE id = ?';
+  db.query(sql, [title, description, duration, genre, director, releaseDate, trailerPath, imagePath, id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: 'Movie updated' });
   });

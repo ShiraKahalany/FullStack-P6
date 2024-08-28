@@ -72,7 +72,6 @@ const ManageMovies = () => {
               <td>{movie.id}</td>
               <td>{movie.title}</td>
               <td>{movie.genre}</td>
-              <td>{movie.rating}</td>
               <td>{movie.duration}</td>
               <td>{new Date(movie.releaseDate).toLocaleDateString()}</td>
               <td>

@@ -101,7 +101,6 @@ const SelectedMovie = () => {
         <div className="movie-info">
           <h3>{movie.title}</h3>
           <p>{movie.description}</p>
-          <p><strong>Rating:</strong> {movie.rating}</p>
           <p><strong>Category:</strong> {movie.genre}</p>
           <p><strong>Runtime:</strong> {movie.duration} minutes</p>
           <p><strong>Released On:</strong> {new Date(movie.releaseDate).toLocaleDateString()}</p>

@@ -27,12 +27,12 @@ const AdminControlPanel = () => {
           <p>Manage Users</p>
         </div>
         <div className="admin-action">
-          <FontAwesomeIcon icon={faTags} className="admin-icon green" />
-          <p>Manage Promotions</p>
+          <FontAwesomeIcon icon={faChartBar} className="admin-icon green" />
+          <p>Manage Orders</p>
         </div>
         <div className="admin-action">
-          <FontAwesomeIcon icon={faChartBar} className="admin-icon green" />
-          <p>View Reports</p>
+          <FontAwesomeIcon icon={faTags} className="admin-icon green" />
+          <p>Manage Promotions</p>
         </div>
       </div>
     </div>

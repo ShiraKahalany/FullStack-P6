@@ -83,7 +83,6 @@ const Movies = () => {
             <img src={movie.imagePath} alt={movie.title} />
             <div className="movie-info">
               <h3>{movie.title}</h3>
-              <p><strong>Rating:</strong> {movie.rating}</p>
               <p><strong>Category:</strong> {movie.genre}</p>
               <p><strong>Runtime:</strong> {movie.duration} minutes</p>
               <div className="screenings">

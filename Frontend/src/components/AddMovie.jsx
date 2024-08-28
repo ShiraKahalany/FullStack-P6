@@ -13,7 +13,6 @@ const AddMovie = () => {
       description: event.target.description.value,
       duration: event.target.duration.value,
       genre: event.target.genre.value,
-      rating: 0,
       director: event.target.director.value,
       releaseDate: event.target.releaseDate.value,
       trailerPath: event.target.trailerPath.value,
