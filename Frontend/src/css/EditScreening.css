@@ -1,0 +1,54 @@
+.edit-screening-container, .add-screening-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .edit-screening-container h2, .add-screening-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .edit-screening-form, .add-screening-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-screening-form label, .add-screening-form label {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .edit-screening-form select, .edit-screening-form input,
+  .add-screening-form select, .add-screening-form input {
+    padding: 8px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .save-button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    align-self: center;
+  }
+  
+  .save-button:hover {
+    background-color: #218838;
+  }
+  

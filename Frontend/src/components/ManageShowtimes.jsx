@@ -1,53 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import '../css/ManageShowtimes.css';  // Assuming you have a CSS file for styling
+import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import '../css/ManageShowtimes.css';
 
 const ManageShowtimes = () => {
-  const [showtimes, setShowtimes] = useState([]);
-  const [movies, setMovies] = useState([]);
-  const [halls, setHalls] = useState([]);
+  const [screenings, setScreenings] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch showtimes data from the backend
-    axios.get('http://localhost:5000/api/screenings')
-      .then(response => {
-        setShowtimes(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching showtimes:', error);
-        setError('Error fetching showtimes data');
-      });
-
-    // Fetch movies data from the backend
-    axios.get('http://localhost:5000/api/movies')
-      .then(response => {
-        setMovies(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching movies:', error);
-      });
-
-    // Fetch halls data from the backend
-    axios.get('http://localhost:5000/api/halls')
-      .then(response => {
-        setHalls(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching halls:', error);
-      });
+    fetchScreenings();
   }, []);
 
-  const getMovieTitle = (movieId) => {
-    const movie = movies.find(m => m.id === movieId);
-    return movie ? movie.title : 'Unknown Movie';
+  const fetchScreenings = () => {
+    axios.get('http://localhost:5000/api/screenings/showtimes')
+      .then(response => {
+        const sortedScreenings = response.data.sort((a, b) => 
+          new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time)
+        );
+        setScreenings(sortedScreenings);
+      })
+      .catch(error => {
+        console.error('Error fetching screenings:', error);
+        setError('Error fetching screenings data');
+      });
   };
 
-  const getHallName = (hallId) => {
-    const hall = halls.find(h => h.id === hallId);
-    return hall ? hall.name : 'Unknown Hall';
+  const handleEdit = (screeningId) => {
+    navigate(`/admin/showtimes/edit-screening/${screeningId}`);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this screening?')) {
+      axios.delete(`http://localhost:5000/api/screenings/${id}`)
+        .then(() => {
+          fetchScreenings();
+        })
+        .catch(error => {
+          console.error('Error deleting screening:', error);
+        });
+    }
+  };
+
+  const handleAdd = () => {
+    navigate('/admin/showtimes/add-screening');
   };
 
   if (error) {
@@ -60,33 +58,40 @@ const ManageShowtimes = () => {
       <table className="manage-showtimes-table">
         <thead>
           <tr>
+            <th>Image</th>
             <th>ID</th>
-            <th>Movie</th>
-            <th>Date/Time</th>
+            <th>Title</th>
             <th>Hall</th>
-            <th>Edit</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {showtimes.map((showtime) => {
-            const showtimeDate = new Date(showtime.date);
-            const formattedDateTime = `${showtimeDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })} ${showtime.time}`;
-
-            return (
-              <tr key={showtime.id}>
-                <td>{showtime.id}</td>
-                <td>{getMovieTitle(showtime.movieId)}</td>
-                <td>{formattedDateTime}</td>
-                <td>{getHallName(showtime.hallId)}</td>
-                <td>
-                  <FontAwesomeIcon icon={faEdit} className="edit-button" />
-                  <FontAwesomeIcon icon={faTrash} className="delete-button" />
-                </td>
-              </tr>
-            );
-          })}
+          {screenings.map((screening) => (
+            <tr key={screening.screeningId}>
+              <td><img src={screening.imagePath} alt={screening.title} className="movie-image" /></td>
+              <td>{screening.screeningId}</td>
+              <td>{screening.title}</td>
+              <td>{screening.hallName}</td>
+              <td>{new Date(screening.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</td>
+              <td>{screening.time.slice(0, 5)}</td>
+              <td>
+                <button onClick={() => handleEdit(screening.screeningId)} className="edit-button">
+                  <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button onClick={() => handleDelete(screening.screeningId)} className="delete-button">
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
+
+      <button className="add-showtime-button" onClick={handleAdd}>
+        <FontAwesomeIcon icon={faPlus} />
+      </button>
     </div>
   );
 };

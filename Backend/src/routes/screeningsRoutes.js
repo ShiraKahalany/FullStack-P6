@@ -3,6 +3,7 @@ const router = express.Router();
 const screeningsController = require('../controllers/screeningsController');
 
 // CRUD routes for screenings
+router.get('/showtimes', screeningsController.getAllScreeningsToManager);
 router.get('/', screeningsController.getAllScreenings);
 router.get('/:id', screeningsController.getScreeningById);
 router.post('/', screeningsController.createScreening);
