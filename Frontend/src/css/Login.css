@@ -7,64 +7,51 @@
   font-family: 'Arial', sans-serif;
   line-height: 1.5;
   height: 100vh;
-  background-color: #fff;
+  background-color: #f0f2f5; /* Light background for a softer look */
   margin: 0;
-  flex-direction: column;
-  padding: 0 20px;
+  padding: 0 10px; /* Padding to ensure the form fits on smaller screens */
+  box-sizing: border-box; /* Ensure padding is included in width/height calculations */
 }
 
 .login-page .main {
-  max-width: 400px;
-  width: 100%;
-  background-color: #fff;
-  padding: 40px 20px;
-  text-align: left;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  width: 90%; /* Relative width to ensure it scales down with screen size */
+  max-width: 360px; /* Maximum width for larger screens */
+  background-color: #ffffff; /* White background for the form */
+  padding: 20px; /* Padding for spacing */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
+  border-radius: 12px; /* Rounded corners */
+  border: 1px solid #e0e0e0; /* Light border for a cleaner look */
+  margin: 0 auto; /* Center the form horizontally */
+  box-sizing: border-box; /* Ensure padding is included in width calculations */
 }
 
 .login-page h1 {
-  font-size: 2.5em;
+  font-size: 1.8em; /* Relative font size for scalability */
   font-weight: bold;
-  margin-bottom: 10px;
-  color: #000;
+  margin-bottom: 15px;
+  color: #333; /* Darker text color for better contrast */
 }
 
 .login-page p {
-  color: #999;
+  color: #666; /* Softer color for paragraph text */
   margin-bottom: 20px;
 }
 
 .login-page label {
   display: block;
-  margin-bottom: 5px;
-  color: #000;
+  margin-bottom: 8px; /* Increased margin for better spacing */
+  color: #333; /* Darker color for labels */
   font-weight: bold;
 }
 
 .login-page input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1em;
-}
-
-.login-page .login-options {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
-.forgot-password {
-  color: #fa541c;
-  font-size: 0.9em;
-  text-decoration: none;
-}
-
-.forgot-password:hover {
-  text-decoration: underline;
+  padding: 12px; /* Padding for input fields */
+  margin-bottom: 15px; /* Margin for spacing */
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 8px; /* Slightly rounded corners */
+  font-size: 1em; /* Relative font size */
+  box-sizing: border-box; /* Ensure padding is included in width calculations */
 }
 
 .login-page .wrap {
@@ -74,26 +61,69 @@
 }
 
 .login-page .submit-button {
-  width: 20%;
-  background-color: #fa541c;
-  color: #fff;
+  width: 100%; /* Full width button */
+  background-color: #fa541c; /* Button background color */
+  color: #ffffff; /* Button text color */
   border: none;
-  padding: 12px;
-  font-size: 0.8em;
+  padding: 14px; /* Padding for button */
+  font-size: 1em; /* Relative font size */
   font-weight: bold;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 8px; /* Slightly rounded corners */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 .login-page .submit-button:hover {
-  background-color: #e03d0c;
+  background-color: #e03d0c; /* Darker color on hover */
 }
 
 .sign-up {
-  color: #fa541c;
+  color: #fa541c; /* Sign-up link color */
   text-decoration: none;
+  font-weight: bold; /* Bold text for emphasis */
 }
 
 .sign-up:hover {
-  text-decoration: underline;
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+  .login-page .main {
+    width: 95%; /* Increase width relative to viewport for smaller screens */
+    padding: 15px; /* Adjust padding for smaller screens */
+    margin: 10% auto; /* Center the form and push it up */
+  }
+
+  .login-page h1 {
+    font-size: 1.6em; /* Adjust font size for smaller screens */
+  }
+
+  .login-page input {
+    font-size: 0.9em; /* Smaller font size for input fields */
+  }
+
+  .login-page .submit-button {
+    font-size: 0.9em; /* Adjusted font size for the button */
+  }
+}
+
+@media (max-width: 360px) {
+  .login-page .main {
+    width: 100%; /* Full width for very small screens */
+    padding: 10px; /* Further reduced padding */
+    margin: 15% auto; /* Adjust margin to fit very small screens better */
+  }
+
+  .login-page h1 {
+    font-size: 1.4em; /* Further reduced font size */
+  }
+
+  .login-page input {
+    font-size: 0.8em; /* Further reduced font size for input fields */
+  }
+
+  .login-page .submit-button {
+    font-size: 0.8em; /* Further reduced font size for the button */
+  }
 }

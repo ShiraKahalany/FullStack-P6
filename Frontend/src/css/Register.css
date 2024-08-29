@@ -6,48 +6,54 @@
   justify-content: center;
   font-family: 'Arial', sans-serif;
   line-height: 1.5;
-  background-color: #fff;
+  height: 100vh;
+  background-color: #f0f2f5;
   margin: 0;
-  flex-direction: column;
+  padding: 0 10px;
+  box-sizing: border-box;
+  padding-top: 60px; /* Adjusted for navbar height */
 }
 
 .register-page .main {
-  max-width: 440px;
-  width: 100%;
-  background-color: #fff;
-  padding: 40px 20px;
-  text-align: left;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  margin-top: 6%;
+
+  width: 90%;
+  max-width: 360px;
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .register-page h1 {
-  font-size: 2.5em;
+  font-size: 1.8em;
   font-weight: bold;
-  margin-bottom: 10px;
-  color: #000;
+  margin-bottom: 15px;
+  color: #333;
 }
 
 .register-page p {
-  color: #999;
+  color: #666;
   margin-bottom: 20px;
 }
 
 .register-page label {
   display: block;
-  margin-bottom: 5px;
-  color: #000;
+  margin-bottom: 8px;
+  color: #333;
   font-weight: bold;
 }
 
 .register-page input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 15px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 1em;
+  box-sizing: border-box;
 }
 
 .register-page .wrap {
@@ -57,31 +63,82 @@
 }
 
 .register-page .submit-button {
-  width: 20%;
+  width: 100%;
   background-color: #fa541c;
-  color: #fff;
+  color: #ffffff;
   border: none;
-  padding: 12px;
-  font-size: 0.8em;
+  padding: 14px;
+  font-size: 1em;
   font-weight: bold;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
 
 .register-page .submit-button:hover {
   background-color: #e03d0c;
 }
 
-.register-page a {
+.sign-in {
   color: #fa541c;
   text-decoration: none;
+  font-weight: bold;
 }
 
-.register-page a:hover {
+.sign-in:hover {
   text-decoration: underline;
 }
 
-.register-page .error-message {
+.error-message {
   color: red;
   margin-bottom: 15px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .register-page {
+    padding-top: 70px; /* Adjust for taller navbars or more spacing */
+  }
+
+  .register-page .main {
+    width: 95%;
+    padding: 15px;
+    margin-top: 10%;
+  }
+
+  .register-page h1 {
+    font-size: 1.6em;
+  }
+
+  .register-page input {
+    font-size: 0.9em;
+  }
+
+  .register-page .submit-button {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-page {
+    padding-top: 80px; /* Adjust for very small screens if needed */
+  }
+
+  .register-page .main {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15%;
+  }
+
+  .register-page h1 {
+    font-size: 1.4em;
+  }
+
+  .register-page input {
+    font-size: 0.8em;
+  }
+
+  .register-page .submit-button {
+    font-size: 0.8em;
+  }
 }

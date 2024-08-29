@@ -1,5 +1,4 @@
-/* src/css/NavBar.css */
-
+/* Base Styles */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -24,8 +23,12 @@
   transition: color 0.3s ease-in-out;
 }
 
-.navbar-logo a:hover {
-  color: #76a1c7;
+.navbar-links {
+  display: flex; /* Show navbar links by default on larger screens */
+}
+
+.navbar-toggle {
+  display: none; /* Hide the toggle button by default */
 }
 
 .navbar-links a {
@@ -45,35 +48,56 @@
   align-items: center;
 }
 
-.navbar-user span {
-  margin-right: 1rem;
-  font-size: 1.2rem;
+.navbar-user-mobile {
+  display: none; /* Hide the mobile user section by default */
 }
 
-.navbar button {
-  background-color: #f44336;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.3s ease-in-out;
-  font-size: 0.85rem;
+/* Responsive Styles for Phones */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 1rem;
+    align-items: flex-start;
+  }
+
+  .navbar-toggle {
+    display: block; /* Show the toggle button on smaller screens */
+    background-color: #76a1c7;
+    color: white;
+    border: none;
+    padding: 0.3rem 0.6rem; /* Make the button smaller */
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.3s ease-in-out;
+    font-size: 0.9rem; /* Adjust font size */
+    position: absolute; /* Positioning on the right */
+    top: 1rem; /* Adjust as needed */
+    right: 1rem; /* Position on the right side */
+  }
+
+  .navbar-toggle:hover {
+    background-color: #5b8db5;
+  }
+
+  .navbar-links {
+    display: none; /* Hide links by default on small screens */
+    flex-direction: column;
+    width: 100%;
+    text-align: left;
+    margin-top: 1rem;
+  }
+
+  .navbar-links.show {
+    display: flex; /* Show links when the menu is toggled */
+  }
+
+  .navbar-user {
+    display: none; /* Hide the default user section on smaller screens */
+  }
+
+  .navbar-user-mobile {
+    display: flex; /* Show the mobile user section on smaller screens */
+    align-items: center;
+    margin-top: 1rem;
+  }
 }
-
-.navbar button:hover {
-  background-color: #d32f2f;
-}
-
-
-.navbar-user a {
-  margin-right: 15px;
-  display: inline-flex;
-  align-items: center;
-  color:#fff;
-}
-
-.navbar-user a svg {
-  margin-right: 5px;
-}
-
