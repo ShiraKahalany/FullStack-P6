@@ -19,6 +19,10 @@ import EditMovie from './components/EditMovie';
 import AddMovie from './components/AddMovie';
 import EditScreening from './components/EditScreening';
 import AddScreening from './components/AddScreening';
+import ManageHalls from './components/ManageHalls';
+import ManageUsers from './components/ManageUsers';
+
+
 function App() {
   return (
     <AuthProvider>
@@ -42,6 +46,9 @@ function App() {
           <Route path="/admin/showtimes" element={<PrivateRoute><ManageShowtimes /></PrivateRoute>} />
           <Route path="/admin/showtimes/edit-screening/:screeningId" element={<PrivateRoute><EditScreening /></PrivateRoute>} />
           <Route path="/admin/showtimes/add-screening" element={<PrivateRoute><AddScreening /></PrivateRoute>} />
+          <Route path="/admin/halls" element={<PrivateRoute><ManageHalls /></PrivateRoute>} />
+          <Route path="/admin/users" element={<PrivateRoute> <ManageUsers /></PrivateRoute>} />
+
         </Routes>
       </Router>
     </AuthProvider>

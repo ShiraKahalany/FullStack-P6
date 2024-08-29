@@ -18,11 +18,11 @@ const AdminControlPanel = () => {
           <FontAwesomeIcon icon={faClock} className="admin-icon purple" />
           <p>Manage Show Times</p>
         </div>
-        <div className="admin-action">
+        <div className="admin-action" onClick={() => navigate('/admin/halls')}>
           <FontAwesomeIcon icon={faDoorOpen} className="admin-icon blue" />
           <p>Manage Halls</p>
         </div>
-        <div className="admin-action">
+        <div className="admin-action" onClick={() => navigate('/admin/users')}>
           <FontAwesomeIcon icon={faUsers} className="admin-icon teal" />
           <p>Manage Users</p>
         </div>

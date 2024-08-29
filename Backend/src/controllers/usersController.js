@@ -76,6 +76,34 @@ const updateUser = (req, res) => {
   });
 };
 
+
+const updateUserToManager = (req, res) => {
+  const { id } = req.params;
+
+  const findUserSql = 'SELECT isAdmin FROM users WHERE id = ?';
+  db.query(findUserSql, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    if (results.length === 0) {
+      // No user found with the given ID
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (results[0].isAdmin === 1) {
+      // User is already an admin
+      return res.status(400).json({ error: 'User is already an admin' });
+    }
+
+    // Update the user to admin
+    const updateAdminSql = 'UPDATE users SET isAdmin = 1 WHERE id = ?';
+    db.query(updateAdminSql, [id], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'User updated to admin' });
+    });
+  });
+};
+
+
 const deleteUser = (req, res) => {
   const { id } = req.params;
   const sql = 'DELETE FROM users WHERE id = ?';
@@ -107,4 +135,4 @@ const loginUser = (req, res) => {
   });
 };
 
-module.exports = { getAllUsers, getUserById, createUser, updateUser, deleteUser , loginUser};
+module.exports = { getAllUsers, getUserById, createUser, updateUser, deleteUser , loginUser, updateUserToManager};
