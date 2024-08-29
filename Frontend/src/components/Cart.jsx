@@ -22,19 +22,12 @@ const Cart = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user || !user.id) {
           alert("Please log in to view your cart.");
-          navigate('/login');
           return;
         }
 
-        // const response = await axios.get('http://localhost:5000/api/tickets');
-        // const allTickets = response.data;
-
-        // const userTickets = allTickets.filter(ticket => ticket.userId === user.id && !ticket.isPaid);
-
-        const response = await axios.get('http://localhost:5000/api/tickets/user' , { params: { userId: user.id, isPaid: 0 } });
-        console.log('User tickets:', response.data); // Debugging
+        const response = await axios.get('http://localhost:5000/api/tickets/user', { params: { userId: user.id, isPaid: 0 } });
         const userTickets = response.data;
-        
+
         const ticketsWithDetails = await Promise.all(userTickets.map(async (ticket) => {
           const screeningResponse = await axios.get(`http://localhost:5000/api/screenings/${ticket.screeningId}`);
           const screening = screeningResponse.data;
@@ -121,65 +114,52 @@ const Cart = () => {
     if (!validatePaymentDetails()) return;
 
     try {
-        const user = JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(localStorage.getItem('user'));
 
-        // Create a string with the IDs of all tickets in the cart
-        const ticketIds = cartItems.map(item => item.id);
+      // Create a string with the IDs of all tickets in the cart
+      const ticketIds = cartItems.map(item => item.id);
 
-        // Calculate the total price without the tax
-        const totalPriceWithoutTax = subtotal;
+      // Calculate the total price without the tax
+      const totalPriceWithoutTax = subtotal;
 
-        // Format today's date as 'YYYY-MM-DD'
-        const today = new Date().toISOString().split('T')[0];
+      // Format today's date as 'YYYY-MM-DD'
+      const today = new Date().toISOString().split('T')[0];
 
-        // Create the new order object
-        const newOrder = {
-            orderId: null,  // The backend will assign this ID
-            userId: user.id,
-            items: JSON.stringify(ticketIds),  // Store ticket IDs as a JSON stringified array
-            totalPrice: totalPriceWithoutTax,
-            date: today
-        };
-        console.log('New order:', newOrder);
+      // Create the new order object
+      const newOrder = {
+        orderId: null,
+        userId: user.id,
+        items: JSON.stringify(ticketIds),
+        totalPrice: totalPriceWithoutTax,
+        date: today
+      };
 
-        // Send a request to create a new order
-        const response = await axios.post('http://localhost:5000/api/orders', newOrder);
+      const response = await axios.post('http://localhost:5000/api/orders', newOrder);
 
-        // Update each ticket to set isPaid to true and update bookedSeats for each screening
-        await Promise.all(cartItems.map(async item => {
-            // Mark the ticket as paid
-            await axios.put(`http://localhost:5000/api/tickets/${item.id}`, { ...item, isPaid: true });
+      // Update each ticket to set isPaid to true and update bookedSeats for each screening
+      await Promise.all(cartItems.map(async item => {
+        await axios.put(`http://localhost:5000/api/tickets/${item.id}`, { ...item, isPaid: true });
 
-            // Fetch the current bookedSeats for the screening
-            const screeningResponse = await axios.get(`http://localhost:5000/api/screenings/${item.screeningId}`);
-            const screening = screeningResponse.data;
-            
-            // Ensure bookedSeats is valid JSON before parsing
-            let bookedSeats = [];
-            if (screening.bookedSeats && screening.bookedSeats.trim() !== '') {
-                bookedSeats = JSON.parse(screening.bookedSeats);
-            }
+        const screeningResponse = await axios.get(`http://localhost:5000/api/screenings/${item.screeningId}`);
+        const screening = screeningResponse.data;
 
-            // Add the current seatNumber to the bookedSeats array
-            bookedSeats.push(item.seatNumber);
-        }));
+        let bookedSeats = [];
+        if (screening.bookedSeats && screening.bookedSeats.trim() !== '') {
+          bookedSeats = JSON.parse(screening.bookedSeats);
+        }
 
-        // Empty the cart after placing the order
-        setCartItems([]);
-        localStorage.setItem('cart', JSON.stringify([]));
+        bookedSeats.push(item.seatNumber);
+      }));
 
-        // Redirect to the order confirmation page with the orderId
-        navigate('/order-confirmation', { state: { orderId: response.data.orderId } });
+      setCartItems([]);
+      localStorage.setItem('cart', JSON.stringify([]));
+
+      navigate('/order-confirmation', { state: { orderId: response.data.orderId } });
     } catch (error) {
-        console.error('Error submitting order:', error);
-        setError('Failed to submit order. Please try again.');
+      console.error('Error submitting order:', error);
+      setError('Failed to submit order. Please try again.');
     }
-};
-
-
-
-  
-
+  };
 
   return (
     <div className="cart-container">
@@ -191,36 +171,38 @@ const Cart = () => {
         </div>
       ) : (
         <>
-          <table className="cart-table">
-            <thead>
-              <tr>
-                <th>Ticket#</th>
-                <th>Movie</th>
-                <th>Date/Time</th>
-                <th>Hall</th>
-                <th>Seat#</th>
-                <th>Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cartItems.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.id}</td>
-                  <td>{item.movieTitle}</td>
-                  <td>{`${item.date} ${item.time}`}</td>
-                  <td>{item.hall}</td>
-                  <td>{item.seatNumber}</td>
-                  <td>${(Number(item.price) || 0).toFixed(2)}</td>
-                  <td>
-                    <button onClick={() => handleRemoveItem(item.id)} className="remove-button">
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </td>
+          <div className="cart-table-wrapper"> {/* Added wrapper for scrollable table */}
+            <table className="cart-table">
+              <thead>
+                <tr>
+                  <th>Ticket#</th>
+                  <th>Movie</th>
+                  <th>Date/Time</th>
+                  <th>Hall</th>
+                  <th>Seat#</th>
+                  <th>Price</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {cartItems.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.id}</td>
+                    <td>{item.movieTitle}</td>
+                    <td>{`${item.date} ${item.time}`}</td>
+                    <td>{item.hall}</td>
+                    <td>{item.seatNumber}</td>
+                    <td>${(Number(item.price) || 0).toFixed(2)}</td>
+                    <td>
+                      <button onClick={() => handleRemoveItem(item.id)} className="remove-button">
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="cart-summary">
             <div className="promotion">
               <input type="text" placeholder="Input Promotional Code" />
@@ -255,7 +237,7 @@ const Cart = () => {
               <label>
                 <input 
                   type="text" 
-                  placeholder="Expiration Date (MM/YY)" 
+                  placeholder="MM/YY" 
                   value={expiryDate} 
                   onChange={(e) => setExpiryDate(e.target.value)} 
                 />
@@ -268,8 +250,10 @@ const Cart = () => {
                   onChange={(e) => setCvv(e.target.value)} 
                 />
               </label>
+              <button className="submit-order-button" onClick={handleSubmitOrder}>
+                Submit Order
+              </button>
             </div>
-            <button className="submit-order-button" onClick={handleSubmitOrder}>Submit Order</button>
           </div>
         </>
       )}

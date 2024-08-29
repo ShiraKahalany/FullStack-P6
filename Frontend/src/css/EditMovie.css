@@ -1,51 +1,59 @@
 .movie-form-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 6%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 60px; /* Adjust the top padding to create space for the header */
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 6%;
+}
+
+.movie-form-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.movie-form-container label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.movie-form-container input,
+.movie-form-container select,
+.movie-form-container textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.movie-form-container textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+.save-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #0056b3;
+}
+
+/* Add media query for phone mode */
+@media (max-width: 768px) {
+  .movie-form-container {
+      padding-top: 80px; /* Increase padding for smaller screens */
+      margin-top: 10%; /* Adjust top margin for phone mode */
   }
-  
-  .movie-form-container h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-  }
-  
-  .movie-form-container label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-  
-  .movie-form-container input,
-  .movie-form-container select,
-  .movie-form-container textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  .movie-form-container textarea {
-    resize: vertical;
-    height: 100px;
-  }
-  
-  .save-button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 3px;
-    cursor: pointer;
-  }
-  
-  .save-button:hover {
-    background-color: #0056b3;
-  }
-  
+}
