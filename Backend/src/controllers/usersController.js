@@ -89,19 +89,18 @@ const updateUserToManager = (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (results[0].isAdmin === 1) {
-      // User is already an admin
-      return res.status(400).json({ error: 'User is already an admin' });
-    }
+    const currentIsAdmin = results[0].isAdmin;
+    const newIsAdmin = currentIsAdmin ? 0 : 1;
 
-    // Update the user to admin
-    const updateAdminSql = 'UPDATE users SET isAdmin = 1 WHERE id = ?';
-    db.query(updateAdminSql, [id], (err, results) => {
+    const updateAdminSql = 'UPDATE users SET isAdmin = ? WHERE id = ?';
+    db.query(updateAdminSql, [newIsAdmin, id], (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'User updated to admin' });
+      const message = newIsAdmin ? 'User updated to admin' : 'Admin rights removed';
+      res.json({ message });
     });
   });
 };
+
 
 
 const deleteUser = (req, res) => {

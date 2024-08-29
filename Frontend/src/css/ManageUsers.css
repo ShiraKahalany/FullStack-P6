@@ -37,7 +37,7 @@
     color: #333; /* Default icon color */
 }
 
-.manager-button {
+.managerCancel-button {
     background-color: #499c5b; /* Green button for creating manager */
     color: #fff;
     border: none;
@@ -51,8 +51,26 @@
     justify-content: center;
 }
 
-.manager-button:hover {
+.manager-button{
+    background-color: #7065b3; /* Green button for creating manager */
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.managerCancel-button:hover {
     background-color: #218838;
+}
+
+.manager-button:hover {
+    background-color: #5a4f8c;
 }
 
 .manager-button .fa-user-tie {

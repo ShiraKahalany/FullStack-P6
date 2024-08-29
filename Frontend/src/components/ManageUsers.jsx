@@ -6,8 +6,13 @@ import '../css/ManageUsers.css';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
+    // Fetch current logged-in user (assuming this is stored in local storage or can be fetched from the backend)
+    const loggedInUser = JSON.parse(localStorage.getItem('user'));
+    setCurrentUserId(loggedInUser?.id);
+    
     fetchUsers();
   }, []);
 
@@ -17,24 +22,21 @@ const ManageUsers = () => {
       .catch(error => console.error('Error fetching users:', error));
   };
 
-  const handleCreateManager = (id) => {
+  const handleToggleManager = (id) => {
     axios.put(`http://localhost:5000/api/users/admin/${id}`)
       .then(response => {
-        // If the request is successful, refresh the users list and show a success message
         fetchUsers();
-        window.alert(response.data.message || 'User updated to admin successfully');
+        window.alert(response.data.message || 'User admin status updated successfully');
       })
       .catch(error => {
-        // If an error occurs, display the error message
         if (error.response && error.response.data && error.response.data.error) {
           window.alert(error.response.data.error);
         } else {
-          window.alert('Error creating manager. Please try again.');
+          window.alert('Error updating user admin status. Please try again.');
         }
-        console.error('Error creating manager:', error);
+        console.error('Error updating user admin status:', error);
       });
   };
-  
 
   return (
     <div className="manage-users-container">
@@ -46,8 +48,14 @@ const ManageUsers = () => {
             <p><strong>ID:</strong> {user.id}</p>
             <p><strong>Username:</strong> {user.username}</p>
             <p><strong>Email:</strong> {user.email}</p>
-            {!user.isAdmin && (
-              <button onClick={() => handleCreateManager(user.id)} className="manager-button">
+            {user.isAdmin ? (
+              user.id !== currentUserId && (
+                <button onClick={() => handleToggleManager(user.id)} className="managerCancel-button">
+                  <FontAwesomeIcon icon={faUserTie} /> Cancel Manager
+                </button>
+              )
+            ) : (
+              <button onClick={() => handleToggleManager(user.id)} className="manager-button">
                 <FontAwesomeIcon icon={faUserTie} /> Create Manager
               </button>
             )}
