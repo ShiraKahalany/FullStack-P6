@@ -22,6 +22,7 @@ const Cart = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user || !user.id) {
           alert("Please log in to view your cart.");
+          navigate('/login');
           return;
         }
 

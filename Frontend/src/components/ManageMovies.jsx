@@ -59,7 +59,6 @@ const ManageMovies = () => {
             <th>ID</th>
             <th>Title</th>
             <th>Genre</th>
-            <th>Rating</th>
             <th>Duration</th>
             <th>Release Date</th>
             <th>Actions</th>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faShieldAlt, faUser, faHome } from '@fortawesome/free-solid-svg-icons';
 import '../css/NavBar.css'; // Import the CSS for styling
 
 function NavBar() {
@@ -38,17 +38,31 @@ function NavBar() {
 
   return (
     <nav className={`navbar ${menuActive ? 'active' : ''}`}>
-      <div className="navbar-logo">
-        <Link to="/" onClick={handleLinkClick}>Pleasure</Link>
+      <div className="navbar-left">
+        <div className="navbar-logo">
+          <Link to="/" onClick={handleLinkClick}> Pleasure</Link>
+        </div>
+        <div className="navbar-icons">
+        <Link to="/movies" onClick={handleLinkClick}> 
+            <FontAwesomeIcon icon={faHome} size="lg" /> 
+          </Link>
+          <Link to="/info" onClick={handleLinkClick}>
+            <FontAwesomeIcon icon={faUser} size="lg" />
+          </Link>
+          <Link to="/cart" onClick={handleLinkClick}>
+            <FontAwesomeIcon icon={faShoppingCart} size="lg" />
+          </Link>
+          {user && user.isAdmin && (
+            <Link to="/admin" onClick={handleLinkClick}>
+              <FontAwesomeIcon icon={faShieldAlt} size="lg" />
+            </Link>
+          )}
+        </div>
       </div>
       <button className="navbar-toggle" onClick={toggleMenu}>
         Menu
       </button>
       <div className={`navbar-links ${menuActive ? 'show' : ''}`}>
-        <Link to="/movies" onClick={handleLinkClick}>Movies</Link>
-        <Link to="/gifts" onClick={handleLinkClick}>GIFTS & MOVIE CARDS</Link>
-        <Link to="/info" onClick={handleLinkClick}>INFO</Link>
-        <Link to="/aboutus" onClick={handleLinkClick}>ABOUT US</Link>
         <div className="navbar-user-mobile">
           {user ? (
             <>
@@ -71,14 +85,6 @@ function NavBar() {
         {user ? (
           <>
             <span>{user.username}</span>
-            <Link to="/cart" onClick={handleLinkClick}>
-              <FontAwesomeIcon icon={faShoppingCart} size="lg" />
-            </Link>
-            {user.isAdmin && (
-              <Link to="/admin" onClick={handleLinkClick}>
-                <FontAwesomeIcon icon={faShieldAlt} size="lg" />
-              </Link>
-            )}
             <button onClick={() => { handleLogout(); handleLinkClick(); }}>Logout</button>
           </>
         ) : (

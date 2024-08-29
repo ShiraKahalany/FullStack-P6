@@ -1,3 +1,47 @@
+/* Seat Button Styles */
+.seat-button {
+  width: 40px;
+  height: 40px;
+  background-color: #f0f0f0; /* Light grey background for unselected seats */
+  border: none;
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out; /* Smooth transitions */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  font-size: small;
+}
+
+.seat-button.selected {
+  background-color: #4CAF50; /* Green background for selected seats */
+  color: white;
+  transform: scale(1.1); /* Slightly larger to indicate selection */
+}
+
+.seat-button.unavailable {
+  background-color: #FF9800; /* Orange background for unavailable seats */
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.6; /* Slightly faded to indicate unavailability */
+}
+
+.seat-button:hover:not(.unavailable):not(.selected) {
+  background-color: #e0e0e0; /* Slightly darker grey on hover */
+  transform: scale(1.05); /* Slight scale effect on hover */
+}
+
+/* Seats Grid */
+.seats-grid {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 10px; /* Increased gap between seats */
+  justify-items: center;
+}
+
+/* Other Styling */
+
 .selected-movie-container {
   padding: 20px;
   max-width: 900px;
@@ -31,6 +75,10 @@
   margin: 5px 0;
 }
 
+.movie-info p b{
+  color: #28a745;
+}
+
 .movie-poster {
   width: 30%;
   display: flex;
@@ -48,38 +96,6 @@
 
 .seats-layout {
   text-align: center;
-}
-
-.seats-grid {
-  display: grid;
-  grid-template-columns: repeat(20, 1fr);
-  gap: 5px;
-  justify-items: center;
-}
-
-.seat-button {
-  width: 40px;
-  height: 40px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.seat-button.selected {
-  background-color: green;
-  color: white;
-}
-
-.seat-button.unavailable {
-  background-color: orange;
-  color: white;
-  cursor: not-allowed;
-}
-
-.seat-button:hover:not(.unavailable):not(.selected) {
-  background-color: lightgrey;
 }
 
 .selected-tickets {

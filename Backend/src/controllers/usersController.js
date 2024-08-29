@@ -17,6 +17,30 @@ const getUserById = (req, res) => {
   });
 };
 
+const getUserOrders = (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    SELECT orders.orderId, orders.userId, orders.totalPrice, orders.date, JSON_ARRAYAGG(JSON_OBJECT(
+      'ticketId', tickets.id,
+      'screeningDate', screenings.date,
+      'screeningTime', screenings.time,
+      'hallId', screenings.hallId,
+      'seatNumber', tickets.seatNumber,
+      'price', tickets.price
+    )) AS tickets
+    FROM orders
+    JOIN tickets ON orders.orderId = tickets.orderId
+    JOIN screenings ON tickets.screeningId = screenings.id
+    WHERE orders.userId = ?
+    GROUP BY orders.orderId
+  `;
+  db.query(sql, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+};
+
+
 const createUser = (req, res) => {
   const { userID, username, password, email, isAdmin } = req.body;
 
@@ -68,9 +92,9 @@ const createUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { id } = req.params;
-  const { userID, username, password, email, isAdmin } = req.body;
-  const sql = 'UPDATE users SET userID = ?, username = ?, password = ?, email = ?, isAdmin = ? WHERE id = ?';
-  db.query(sql, [userID, username, password, email, isAdmin, id], (err, results) => {
+  const { username, password, email } = req.body;
+  const sql = 'UPDATE users SET username = ?, password = ?, email = ? WHERE id = ?';
+  db.query(sql, [username, password, email, id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: 'User updated' });
   });
@@ -134,4 +158,33 @@ const loginUser = (req, res) => {
   });
 };
 
-module.exports = { getAllUsers, getUserById, createUser, updateUser, deleteUser , loginUser, updateUserToManager};
+const refundTicket = (req, res) => {
+  const { ticketId } = req.params;
+  const { orderId } = req.body;
+
+  const deleteTicketSql = 'DELETE FROM tickets WHERE id = ?';
+  const checkOrderSql = 'SELECT COUNT(*) as ticketCount FROM tickets WHERE orderId = ?';
+
+  db.query(deleteTicketSql, [ticketId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    // Check if there are any remaining tickets in the order
+    db.query(checkOrderSql, [orderId], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      if (results[0].ticketCount === 0) {
+        // If no tickets are left, delete the order
+        const deleteOrderSql = 'DELETE FROM orders WHERE orderId = ?';
+        db.query(deleteOrderSql, [orderId], (err, results) => {
+          if (err) return res.status(500).json({ error: err.message });
+          res.json({ message: 'Ticket and order refunded successfully.' });
+        });
+      } else {
+        res.json({ message: 'Ticket refunded successfully.' });
+      }
+    });
+  });
+};
+
+
+module.exports = { getUserOrders, getAllUsers, getUserById, createUser, updateUser, deleteUser , loginUser, updateUserToManager, refundTicket};

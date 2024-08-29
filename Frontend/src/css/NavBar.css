@@ -3,7 +3,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem; /* Reduced padding */
   background-color: #333;
   color: #fff;
   position: fixed;
@@ -15,32 +15,36 @@
   transition: all 0.3s ease-in-out;
 }
 
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
 .navbar-logo a {
   text-decoration: none;
   color: #fff;
-  font-size: 1.8rem;
+  font-size: 1.5rem; /* Reduced font size */
   font-weight: bold;
   transition: color 0.3s ease-in-out;
+  margin-right: 1rem; /* Reduced margin */
+}
+
+.navbar-icons a {
+  margin-right: 0.5rem; /* Reduced margin */
+  color: #fff;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-icons a:hover {
+  color: #76a1c7;
 }
 
 .navbar-links {
-  display: flex; /* Show navbar links by default on larger screens */
+  display: flex;
 }
 
 .navbar-toggle {
-  display: none; /* Hide the toggle button by default */
-}
-
-.navbar-links a {
-  margin: 0 1rem;
-  text-decoration: none;
-  color: #fff;
-  font-size: 1.1rem;
-  transition: color 0.3s ease-in-out;
-}
-
-.navbar-links a:hover {
-  color: #76a1c7;
+  display: none;
 }
 
 .navbar-user {
@@ -49,30 +53,49 @@
 }
 
 .navbar-user-mobile {
-  display: none; /* Hide the mobile user section by default */
+  display: none;
+}
+
+/* Styles for the Logout Button */
+.navbar-user button,
+.navbar-user-mobile button {
+  background-color: #76a1c7;
+  color: #fff;
+  border: none;
+  padding: 0.2rem 0.5rem; /* Further reduced padding */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem; /* Further reduced font size */
+  margin-left: 0.5rem; /* Reduced margin */
+  transition: background-color 0.3s ease-in-out;
+}
+
+.navbar-user button:hover,
+.navbar-user-mobile button:hover {
+  background-color: #5b8db5;
 }
 
 /* Responsive Styles for Phones */
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
-    padding: 1rem;
+    padding: 0.5rem; /* Reduced padding */
     align-items: flex-start;
   }
 
   .navbar-toggle {
-    display: block; /* Show the toggle button on smaller screens */
+    display: block;
     background-color: #76a1c7;
     color: white;
     border: none;
-    padding: 0.3rem 0.6rem; /* Make the button smaller */
+    padding: 0.3rem 0.6rem;
     cursor: pointer;
     border-radius: 6px;
     transition: background-color 0.3s ease-in-out;
-    font-size: 0.9rem; /* Adjust font size */
-    position: absolute; /* Positioning on the right */
-    top: 1rem; /* Adjust as needed */
-    right: 1rem; /* Position on the right side */
+    font-size: 0.9rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
   }
 
   .navbar-toggle:hover {
@@ -80,7 +103,7 @@
   }
 
   .navbar-links {
-    display: none; /* Hide links by default on small screens */
+    display: none;
     flex-direction: column;
     width: 100%;
     text-align: left;
@@ -88,16 +111,16 @@
   }
 
   .navbar-links.show {
-    display: flex; /* Show links when the menu is toggled */
+    display: flex;
   }
 
   .navbar-user {
-    display: none; /* Hide the default user section on smaller screens */
+    display: none;
   }
 
   .navbar-user-mobile {
-    display: flex; /* Show the mobile user section on smaller screens */
+    display: flex;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 1rem;
   }
 }

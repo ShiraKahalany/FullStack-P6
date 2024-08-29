@@ -106,8 +106,10 @@ const SelectedMovie = () => {
           <p><strong>Released On:</strong> {new Date(movie.releaseDate).toLocaleDateString()}</p>
           <p><strong>Director:</strong> {movie.director}</p>
           <p><strong>Date:</strong> {new Date(screening.date).toLocaleDateString()}</p>
-          <p><strong>Time:</strong> {screening.time}</p>
+          <p><strong>Time:</strong> {screening.time.slice(0, 5)}</p>
           <p><strong>Hall:</strong> {hall.name}</p>
+          <p><strong>Price For Ticket:</strong><b> $10.00</b></p>
+
         </div>
         <div className="movie-poster">
           <img src={movie.imagePath} alt={movie.title} />

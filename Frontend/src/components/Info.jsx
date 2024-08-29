@@ -1,79 +1,157 @@
-import React, { useContext, useState, useEffect } from 'react';
-import AuthContext from '../components/AuthContext';
-import data from '../../public/data.json'; // Adjust the path
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faEdit, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import '../css/Info.css';
+import MyOrders from './MyOrders';
 
 const Info = () => {
-  const { user } = useContext(AuthContext);
-  const [userInfo, setUserInfo] = useState(null);
-  const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [showOrders, setShowOrders] = useState(false);
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    const localStorageUser = localStorage.getItem('user');
-    if (localStorageUser) {
-      const parsedUser = JSON.parse(localStorageUser);
-      setUserInfo(parsedUser);
+    const storedUser = JSON.parse(localStorage.getItem('user'));
 
-      // Fetch the user's orders from data.json based on userId
-      const userOrders = data.orders.filter(order => order.userId === parsedUser.id);
-      setOrders(userOrders);
+    if (!storedUser) {
+      alert("You need to log in first.");
+      navigate('/login');
+      return;
     }
-  }, [user]);
 
-  if (!userInfo) {
-    return <div>Loading...</div>;
+    // Fetch the user details from the server
+    axios.get(`http://localhost:5000/api/users/${storedUser.id}`)
+      .then(response => {
+        setUser(response.data);
+        setPassword(response.data.password);
+        setUsername(response.data.username);
+        setEmail(response.data.email);
+      })
+      .catch(error => {
+        console.error('Error fetching user details:', error);
+        alert('Failed to fetch user details.');
+      });
+  }, [navigate]);
+
+  const handleEditClick = () => {
+    const currentPassword = prompt("Please enter your current password to edit your details:");
+
+    if (!currentPassword) {
+      alert("Password is required to edit your details.");
+      return;
+    }
+
+    if (currentPassword !== password) {
+      alert("Incorrect password. You cannot edit your details.");
+      return;
+    }
+
+    setEditing(true);
+  };
+
+  const handleSaveClick = async () => {
+    const updateData = {
+      username: username,
+      email: email,
+      password: password, // Keep the old password if not changing it
+    };
+  
+    try {
+      const updateResponse = await axios.put(`http://localhost:5000/api/users/${user.id}`, updateData);
+      
+      if (updateResponse.status === 200) {
+        const response = await axios.post('http://localhost:5000/api/users/login', { email, password });
+  
+        if (response.data) {
+          const updatedUser = response.data;
+          setUser(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          alert('User information updated successfully.');
+        } else {
+          alert('Failed to refresh user session. Please log in again.');
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user information:', error);
+      alert('Failed to update user information.');
+    }
+  
+    setEditing(false);
+  };
+
+  const handleCancelClick = () => {
+    setUsername(user.username);
+    setEmail(user.email);
+    setPassword(user.password);
+    setEditing(false);
+  };
+
+  const toggleOrders = () => {
+    setShowOrders(!showOrders);
+  };
+
+  if (!user) {
+    return null;
   }
 
   return (
-    <div className="info-page">
-      <div className="info-container">
-        <h2>{userInfo.username}'s Information</h2>
-        <div className="info-section">
-          <p><strong>Email:</strong> {userInfo.email}</p>
-          <p><strong>Role:</strong> {userInfo.isAdmin ? 'Admin' : 'User'}</p>
-        </div>
-
-        {orders.length > 0 ? (
-          <div className="order-history">
-            <h3>Order History</h3>
-            {orders.map(order => (
-              <div key={order.orderId} className="order-container">
-                <h4>Booking ID <a href={`#`}>{order.orderId}</a></h4>
-                <table className="order-table">
-                  <thead>
-                    <tr>
-                      <th>Ticket ID</th>
-                      <th>Show ID</th>
-                      <th>Show Date</th>
-                      <th>Hall ID</th>
-                      <th>Seat Number</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.items.map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.ticketId}</td>
-                        <td>{item.screeningId}</td>
-                        <td>{new Date(item.date).toLocaleString()}</td>
-                        <td>{data.screenings.find(s => s.id === item.screeningId).hallId}</td>
-                        <td>{item.seatNumber}</td>
-                        <td>{item.ticketType}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="order-total">
-                  <p>Total: <strong>${order.totalPrice.toFixed(2)}</strong></p>
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="info-container">
+      <div className="info-card">
+        <FontAwesomeIcon icon={faUser} className="user-icon" />
+        {!editing ? (
+          <>
+            <p><strong>Username:</strong> {user.username}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            <button className="edit-button" onClick={handleEditClick}>
+              <FontAwesomeIcon icon={faEdit} /> Edit
+            </button>
+          </>
         ) : (
-          <div className="no-orders">
-            <h3>No previous orders found.</h3>
-          </div>
+          <>
+            <div className="input-group">
+              <label>Username:</label>
+              <input 
+                type="text" 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)} 
+              />
+            </div>
+            <div className="input-group">
+              <label>Email:</label>
+              <input 
+                type="email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+              />
+            </div>
+            <div className="input-group">
+              <label>Password:</label>
+              <input 
+                type="password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+              />
+            </div>
+            <div className="button-group">
+              <button className="save-button" onClick={handleSaveClick}>
+                Save
+              </button>
+              <button className="cancel-button" onClick={handleCancelClick}>
+                Cancel
+              </button>
+            </div>
+          </>
         )}
       </div>
+      <button className="orders-button" onClick={toggleOrders}>
+        <FontAwesomeIcon icon={faClipboardList} /> My Orders
+      </button>
+      {showOrders && <MyOrders userId={user.id} />}
     </div>
   );
 };

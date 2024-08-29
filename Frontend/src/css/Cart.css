@@ -30,9 +30,6 @@
   align-items: center;
 }
 
-.promotion {
-  display: flex;
-}
 
 .promotion input {
   padding: 8px;

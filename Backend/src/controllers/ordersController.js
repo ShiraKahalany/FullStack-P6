@@ -19,6 +19,128 @@ const getOrderById = (req, res) => {
   });
 };
 
+// const getOrdersByUserId = (req, res) => {
+//   const { userId } = req.params;
+//   const sql = `
+//     SELECT 
+//     orders.orderId, 
+//     orders.userId, 
+//     orders.totalPrice, 
+//     orders.date, 
+//     tickets.id as ticketId,
+//     tickets.screeningId, 
+//     tickets.seatNumber, 
+//     tickets.price, 
+//     screenings.date as screeningDate,
+//     screenings.time as screeningTime,
+//     screenings.hallId
+//     FROM orders
+//     LEFT JOIN JSON_TABLE(orders.items, '$[*]' COLUMNS(ticketId INT PATH '$')) AS ticketItems
+//       ON ticketItems.ticketId IS NOT NULL
+//     LEFT JOIN tickets 
+//       ON ticketItems.ticketId = tickets.id
+//     LEFT JOIN screenings 
+//       ON screenings.id = tickets.screeningId
+//     WHERE orders.userId = 1000
+//       AND tickets.id IS NOT NULL;
+//   `;
+
+//   db.query(sql, [userId], (err, results) => {
+//     if (err) return res.status(500).json({ error: err.message });
+//     res.json(results);
+//   });
+// };
+
+const getOrdersByUserId = (req, res) => {
+  const userId = req.params.userId;
+  
+  const sql = `
+    SELECT 
+      orders.orderId, 
+      orders.userId, 
+      orders.totalPrice, 
+      orders.date, 
+      tickets.id as ticketId,
+      tickets.screeningId, 
+      tickets.seatNumber, 
+      tickets.price, 
+      screenings.date as screeningDate,
+      screenings.time as screeningTime,
+      screenings.hallId
+    FROM orders
+    LEFT JOIN JSON_TABLE(orders.items, '$[*]' COLUMNS(ticketId INT PATH '$')) AS ticketItems
+      ON ticketItems.ticketId IS NOT NULL
+    LEFT JOIN tickets 
+      ON ticketItems.ticketId = tickets.id
+    LEFT JOIN screenings 
+      ON screenings.id = tickets.screeningId
+    WHERE orders.userId = ? AND tickets.id IS NOT NULL;
+  `;
+
+  db.query(sql, [userId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    const orders = [];
+    const orderMap = new Map();
+
+    results.forEach(row => {
+      if (!orderMap.has(row.orderId)) {
+        orderMap.set(row.orderId, {
+          orderId: row.orderId,
+          userId: row.userId,
+          totalPrice: row.totalPrice,
+          date: row.date,
+          tickets: []
+        });
+      }
+
+      orderMap.get(row.orderId).tickets.push({
+        ticketId: row.ticketId,
+        screeningId: row.screeningId,
+        seatNumber: row.seatNumber,
+        price: row.price,
+        screeningDate: row.screeningDate,
+        screeningTime: row.screeningTime,
+        hallId: row.hallId,
+      });
+    });
+
+    orderMap.forEach(order => orders.push(order));
+    res.json(orders);
+  });
+};
+
+
+const getOrdersWithTickets = (req, res) => {
+  const sql = `
+    SELECT 
+    orders.orderId, 
+    orders.userId, 
+    orders.totalPrice, 
+    orders.date, 
+    tickets.id as ticketId,
+    tickets.screeningId, 
+    tickets.seatNumber, 
+    tickets.price, 
+    screenings.date as screeningDate,
+    screenings.time as screeningTime,
+    screenings.hallId
+    FROM orders
+    LEFT JOIN JSON_TABLE(orders.items, '$[*]' COLUMNS(ticketId INT PATH '$')) AS ticketItems
+      ON ticketItems.ticketId IS NOT NULL
+    LEFT JOIN tickets 
+      ON ticketItems.ticketId = tickets.id
+    LEFT JOIN screenings 
+      ON screenings.id = tickets.screeningId
+    WHERE tickets.id IS NOT NULL;
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+};
+
 
 /****************************** CREATE ******************************/
 
@@ -198,4 +320,41 @@ const deleteOrder = (req, res) => {
   });
 };
 
-module.exports = { getAllOrders, getOrderById, createOrder, updateOrder, deleteOrder };
+
+const refundDeleteOrder = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    console.log(`Starting deletion for order ID: ${id}`);
+
+    // Start a transaction
+    await db.promise().beginTransaction();
+    console.log(`Transaction started for order ID: ${id}`);
+
+    // Delete the order with the provided ID
+    const deleteOrderSql = 'DELETE FROM orders WHERE orderId = ?';
+    const [result] = await db.promise().query(deleteOrderSql, [id]);
+
+    if (result.affectedRows === 0) {
+      await db.promise().rollback(); // Rollback transaction if no rows were affected
+      console.log('Order not found, rolling back transaction');
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Commit the transaction
+    await db.promise().commit();
+    console.log(`Order ID ${id} deleted successfully`);
+
+    return res.json({ message: `Order ID ${id} deleted successfully` });
+  } catch (error) {
+    // Rollback the transaction in case of error
+    await db.promise().rollback();
+    console.error('Error during order deletion:', error.message);
+    return res.status(500).json({ error: 'An error occurred while processing your request.' });
+  }
+};
+
+
+
+
+module.exports = {refundDeleteOrder, getAllOrders, getOrderById, getOrdersByUserId, createOrder, updateOrder, deleteOrder, getOrdersWithTickets };

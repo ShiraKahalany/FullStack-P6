@@ -26,7 +26,7 @@ const AdminControlPanel = () => {
           <FontAwesomeIcon icon={faUsers} className="admin-icon teal" />
           <p>Manage Users</p>
         </div>
-        <div className="admin-action">
+        <div className="admin-action" onClick={() => navigate('/admin/orders')}>
           <FontAwesomeIcon icon={faChartBar} className="admin-icon green" />
           <p>Manage Orders</p>
         </div>
