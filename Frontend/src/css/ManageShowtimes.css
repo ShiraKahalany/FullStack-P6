@@ -1,7 +1,7 @@
 .manage-showtimes-container {
   padding: 20px;
   max-width: 1200px; /* Set a maximum width for larger screens */
-  margin: 0 auto;
+  margin: 80px auto 0; /* Adjust top margin to avoid header overlap */
 }
 
 .manage-showtimes-container h2 {
@@ -36,29 +36,7 @@
   object-fit: cover; /* Ensure images are not distorted */
 }
 
-.edit-button,
-.delete-button {
-  background-color: #6c757d;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  margin-right: 5px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 14px;
-}
 
-.delete-button {
-  background-color: #e74c3c;
-}
-
-.edit-button:hover {
-  background-color: #5a6268;
-}
-
-.delete-button:hover {
-  background-color: #c0392b;
-}
 
 .add-showtime-button {
   background-color: #9e71c5;
@@ -83,6 +61,7 @@
 @media (max-width: 600px) {
   .manage-showtimes-container {
     padding: 10px;
+    margin-top: 60px; /* Adjust top margin for smaller screens */
   }
 
   .manage-showtimes-container h2 {
@@ -100,14 +79,14 @@
     height: 45px;
   }
 
-  .edit-button,
-  .delete-button {
-    padding: 4px 6px;
-    font-size: 12px;
-  }
 
   .add-showtime-button {
-    padding: 10px;
-    font-size: 18px;
+    width: 32px; /* Smaller width */
+    height: 32px; /* Smaller height */
+    padding: 0; /* Remove inner padding */
+    font-size: 14px; /* Adjust font size for smaller buttons */
+    display: flex; /* Align icon centrally */
+    align-items: center;
+    justify-content: center;
   }
 }

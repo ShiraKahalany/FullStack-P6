@@ -72,7 +72,6 @@ const MyOrders = ({ userId }) => {
             <div className="order-header">
               <p><strong>Order ID:</strong> {order.orderId}</p>
               <p><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</p>
-              <p><strong>User ID:</strong> {order.userId}</p>
               <p className="total-price"><strong>Total Price:</strong> ${order.totalPrice}</p>
             </div>
             <table className="order-table">

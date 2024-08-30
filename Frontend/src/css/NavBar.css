@@ -3,16 +3,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 1rem; /* Reduced padding */
+  padding: 0.5rem 1rem;
   background-color: #333;
   color: #fff;
   position: fixed;
   width: 100%;
   top: 0;
   z-index: 1000;
-  max-width: -webkit-fill-available;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease-in-out;
+  box-sizing: border-box;
 }
 
 .navbar-left {
@@ -23,14 +23,18 @@
 .navbar-logo a {
   text-decoration: none;
   color: #fff;
-  font-size: 1.5rem; /* Reduced font size */
+  font-size: 1.5rem;
   font-weight: bold;
-  transition: color 0.3s ease-in-out;
-  margin-right: 1rem; /* Reduced margin */
+  margin-right: 1rem;
+}
+
+.navbar-icons {
+  display: flex;
+  align-items: center;
 }
 
 .navbar-icons a {
-  margin-right: 0.5rem; /* Reduced margin */
+  margin-right: 0.5rem;
   color: #fff;
   transition: color 0.3s ease-in-out;
 }
@@ -39,88 +43,44 @@
   color: #76a1c7;
 }
 
-.navbar-links {
-  display: flex;
-}
-
-.navbar-toggle {
-  display: none;
-}
-
 .navbar-user {
   display: flex;
   align-items: center;
+  margin-left: auto;
+  padding-left: 1rem;
+  white-space: nowrap;
 }
 
-.navbar-user-mobile {
-  display: none;
-}
-
-/* Styles for the Logout Button */
-.navbar-user button,
-.navbar-user-mobile button {
+.navbar-user button {
   background-color: #76a1c7;
   color: #fff;
   border: none;
-  padding: 0.2rem 0.5rem; /* Further reduced padding */
+  padding: 0.3rem 0.7rem;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.8rem; /* Further reduced font size */
-  margin-left: 0.5rem; /* Reduced margin */
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
   transition: background-color 0.3s ease-in-out;
 }
 
-.navbar-user button:hover,
-.navbar-user-mobile button:hover {
+.navbar-user button:hover {
   background-color: #5b8db5;
 }
 
 /* Responsive Styles for Phones */
 @media (max-width: 768px) {
   .navbar {
-    flex-direction: column;
-    padding: 0.5rem; /* Reduced padding */
-    align-items: flex-start;
+    flex-direction: row;
+    padding: 0.5rem;
+    align-items: center;
   }
 
-  .navbar-toggle {
-    display: block;
-    background-color: #76a1c7;
-    color: white;
-    border: none;
-    padding: 0.3rem 0.6rem;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background-color 0.3s ease-in-out;
-    font-size: 0.9rem;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-  }
-
-  .navbar-toggle:hover {
-    background-color: #5b8db5;
-  }
-
-  .navbar-links {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    text-align: left;
-    margin-top: 1rem;
-  }
-
-  .navbar-links.show {
-    display: flex;
+  .navbar-icons a {
+    font-size: 0.8rem; /* Makes icons smaller on small screens */
   }
 
   .navbar-user {
-    display: none;
-  }
-
-  .navbar-user-mobile {
-    display: flex;
-    align-items: center;
-    margin-top: 1rem;
+    margin-left: auto;
+    padding-left: 0;
   }
 }

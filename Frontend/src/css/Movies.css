@@ -1,7 +1,7 @@
 /* src/css/Movies.css */
 
 .movies-container {
-  padding: 20px;
+  padding: 60px 20px 20px; /* Add top padding to prevent content from being cut off by the header */
   max-width: 800px;
   margin: auto;
 }
@@ -89,4 +89,15 @@ h2 {
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
+}
+
+/* Responsive Styles for Phones */
+@media (max-width: 768px) {
+  .movie-info h3 {
+    font-size: 1.2em; /* Smaller font size for movie title */
+  }
+
+  .movie-info p {
+    font-size: 0.9em; /* Smaller font size for movie details */
+  }
 }

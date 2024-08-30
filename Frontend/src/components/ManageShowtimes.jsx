@@ -77,10 +77,10 @@ const ManageShowtimes = () => {
               <td>{new Date(screening.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</td>
               <td>{screening.time.slice(0, 5)}</td>
               <td>
-                <button onClick={() => handleEdit(screening.screeningId)} className="edit-button">
+                <button onClick={() => handleEdit(screening.screeningId)} className="editButton">
                   <FontAwesomeIcon icon={faEdit} />
                 </button>
-                <button onClick={() => handleDelete(screening.screeningId)} className="delete-button">
+                <button onClick={() => handleDelete(screening.screeningId)} className="deleteButton">
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>

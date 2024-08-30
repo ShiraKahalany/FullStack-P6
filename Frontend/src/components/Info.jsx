@@ -107,7 +107,7 @@ const Info = () => {
           <>
             <p><strong>Username:</strong> {user.username}</p>
             <p><strong>Email:</strong> {user.email}</p>
-            <button className="edit-button" onClick={handleEditClick}>
+            <button className="edit_button" onClick={handleEditClick}>
               <FontAwesomeIcon icon={faEdit} /> Edit
             </button>
           </>
@@ -138,10 +138,10 @@ const Info = () => {
               />
             </div>
             <div className="button-group">
-              <button className="save-button" onClick={handleSaveClick}>
+              <button className="save_button" onClick={handleSaveClick}>
                 Save
               </button>
-              <button className="cancel-button" onClick={handleCancelClick}>
+              <button className="cancel_button" onClick={handleCancelClick}>
                 Cancel
               </button>
             </div>

@@ -74,10 +74,10 @@ const ManageMovies = () => {
               <td>{movie.duration}</td>
               <td>{new Date(movie.releaseDate).toLocaleDateString()}</td>
               <td>
-                <button onClick={() => handleEdit(movie.id)} className="edit-button">
+                <button onClick={() => handleEdit(movie.id)} className="editButton">
                   <FontAwesomeIcon icon={faEdit} /> 
                 </button>
-                <button onClick={() => handleDelete(movie.id)} className="delete-button">
+                <button onClick={() => handleDelete(movie.id)} className="deleteButton">
                   <FontAwesomeIcon icon={faTrash} /> 
                 </button>
               </td>
