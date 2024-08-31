@@ -19,54 +19,22 @@ const getOrderById = (req, res) => {
   });
 };
 
-// const getOrdersByUserId = (req, res) => {
-//   const { userId } = req.params;
-//   const sql = `
-//     SELECT 
-//     orders.orderId, 
-//     orders.userId, 
-//     orders.totalPrice, 
-//     orders.date, 
-//     tickets.id as ticketId,
-//     tickets.screeningId, 
-//     tickets.seatNumber, 
-//     tickets.price, 
-//     screenings.date as screeningDate,
-//     screenings.time as screeningTime,
-//     screenings.hallId
-//     FROM orders
-//     LEFT JOIN JSON_TABLE(orders.items, '$[*]' COLUMNS(ticketId INT PATH '$')) AS ticketItems
-//       ON ticketItems.ticketId IS NOT NULL
-//     LEFT JOIN tickets 
-//       ON ticketItems.ticketId = tickets.id
-//     LEFT JOIN screenings 
-//       ON screenings.id = tickets.screeningId
-//     WHERE orders.userId = 1000
-//       AND tickets.id IS NOT NULL;
-//   `;
-
-//   db.query(sql, [userId], (err, results) => {
-//     if (err) return res.status(500).json({ error: err.message });
-//     res.json(results);
-//   });
-// };
-
 const getOrdersByUserId = (req, res) => {
   const userId = req.params.userId;
   
   const sql = `
-    SELECT 
-      orders.orderId, 
-      orders.userId, 
-      orders.totalPrice, 
-      orders.date, 
-      tickets.id as ticketId,
-      tickets.screeningId, 
-      tickets.seatNumber, 
-      tickets.price, 
-      screenings.date as screeningDate,
-      screenings.time as screeningTime,
-      screenings.hallId
+   SELECT 
+    orders.orderId, 
+    orders.userId, 
+    orders.totalPrice, 
+    orders.date, 
+    tickets.id as ticketId,
+    tickets.screeningId, 
+    tickets.seatNumber, 
+    tickets.price, 
+    screenings.date as screeningDate,
+    screenings.time as screeningTime,
+    screenings.hallId
     FROM orders
     LEFT JOIN JSON_TABLE(orders.items, '$[*]' COLUMNS(ticketId INT PATH '$')) AS ticketItems
       ON ticketItems.ticketId IS NOT NULL
@@ -74,7 +42,10 @@ const getOrdersByUserId = (req, res) => {
       ON ticketItems.ticketId = tickets.id
     LEFT JOIN screenings 
       ON screenings.id = tickets.screeningId
-    WHERE orders.userId = ? AND tickets.id IS NOT NULL;
+    WHERE orders.userId = ? 
+      AND tickets.id IS NOT NULL
+    ORDER BY orders.date desc;
+
   `;
 
   db.query(sql, [userId], (err, results) => {

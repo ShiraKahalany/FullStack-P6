@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import '../css/ManageMovies.css';
 
 const ManageMovies = () => {
   const [movies, setMovies] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -45,13 +46,35 @@ const ManageMovies = () => {
     navigate('/admin/movies/add-movie');
   };
 
+  const filteredMovies = movies.filter(movie => {
+    return (
+      movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      movie.id.toString().includes(searchTerm) ||
+      movie.genre.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
     <div className="manage-movies-container">
-      <h2>Manage Movies</h2>
+      <div className="manage-movies-header">
+        <h2>Manage Movies</h2>
+        <div className="search-container">
+          <button className="search-button">
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+          <input
+            type="text"
+            placeholder="Search by Title, ID, or Genre..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+          />
+        </div>
+      </div>
       <table className="manage-movies-table">
         <thead>
           <tr>
@@ -65,7 +88,7 @@ const ManageMovies = () => {
           </tr>
         </thead>
         <tbody>
-          {movies.map((movie) => (
+          {filteredMovies.map((movie) => (
             <tr key={movie.id}>
               <td><img src={movie.imagePath} alt={movie.title} className="movie-image" /></td>
               <td>{movie.id}</td>
@@ -75,10 +98,10 @@ const ManageMovies = () => {
               <td>{new Date(movie.releaseDate).toLocaleDateString()}</td>
               <td>
                 <button onClick={() => handleEdit(movie.id)} className="editButton">
-                  <FontAwesomeIcon icon={faEdit} /> 
+                  <FontAwesomeIcon icon={faEdit} />
                 </button>
                 <button onClick={() => handleDelete(movie.id)} className="deleteButton">
-                  <FontAwesomeIcon icon={faTrash} /> 
+                  <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
             </tr>

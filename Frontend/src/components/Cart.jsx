@@ -130,7 +130,7 @@ const Cart = () => {
         const totalPriceWithoutTax = subtotal;
 
         // Format today's date as 'YYYY-MM-DD'
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' }).split('T')[0];
 
         // Create the new order object
         const newOrder = {

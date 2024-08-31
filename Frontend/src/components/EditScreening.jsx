@@ -98,6 +98,10 @@ const EditScreening = () => {
     return <div>{error}</div>;
   }
 
+  const handleCancel = () => {
+    navigate('/admin/showtimes');
+  };
+
   return (
     <div className="edit-screening-container">
       <h2>Edit Screening</h2>
@@ -153,7 +157,10 @@ const EditScreening = () => {
             onChange={handleTimeChange}
           />
         </label>
+        <div className="buttons-group">
         <button type="submit" className="save-button">Save Changes</button>
+        <button type="button" className="cancel-b" onClick={handleCancel}>Cancel</button>
+        </div>
       </form>
     </div>
   );

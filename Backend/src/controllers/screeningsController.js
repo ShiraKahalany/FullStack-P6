@@ -1,7 +1,7 @@
 const db = require('../config');
 
 const getAllScreenings = (req, res) => {
-  const sql = 'SELECT * FROM screenings';
+  const sql = 'SELECT * FROM screenings ORDER BY date ASC, time ASC;';
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);

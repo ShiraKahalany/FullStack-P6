@@ -34,7 +34,7 @@ const createMovie = (req, res) => {
       const currentId = results[0].current_value;
       const newMovieId = currentId + 1;
 
-      const insertMovieSql = 'INSERT INTO movies (id, title, description, duration, genre, director, releaseDate, trailerPath, imagePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      const insertMovieSql = 'INSERT INTO movies (id, title, description, duration, genre, director, releaseDate, trailerPath, imagePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
       db.query(insertMovieSql, [newMovieId, title, description, duration, genre, director, releaseDate, trailerPath, imagePath], (err, results) => {
         if (err) {
           return db.rollback(() => {

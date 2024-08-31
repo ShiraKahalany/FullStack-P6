@@ -1,15 +1,65 @@
-.manage-movies-container {
-  padding: 10px;
-  max-width: 1000px; /* Reduce max width for a smaller table */
-  margin: 0 auto;
+.manage-movies-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  position: relative;
+}
+
+.search-bar {
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 250px;
+  transition: all 0.3s ease;
+  margin-top: 10%;
+}
+
+.search-bar:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.search-button {
+  background-color: #f9f9f9;
+  border: none;
+  border-radius: 5px 0 0 5px;
+  padding: 8px 12px;
+  margin-right: -1px;
+  cursor: pointer;
+  color: black;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10%;
+}
+
+.search-button:hover {
+  background-color: #f1f1f1;
 }
 
 .manage-movies-container h2 {
-  margin-bottom: 20px;
-  font-size: 22px; /* Slightly reduce font size */
+  margin-bottom: 0;
+  font-size: 22px;
   color: #333;
-  text-align: center; /* Center the heading */
+  text-align: left;
   margin-top: 7%;
+}
+
+.manage-movies-container {
+  padding: 10px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100vw; /* Full width of the viewport */
+  height: 100vh; /* Full height of the viewport */
 }
 
 .manage-movies-table {
@@ -20,20 +70,20 @@
 
 .manage-movies-table th,
 .manage-movies-table td {
-  padding: 8px; /* Reduce padding for a more compact layout */
+  padding: 8px;
   text-align: left;
   border-bottom: 1px solid #ddd;
-  font-size: 15px; /* Reduce font size for smaller text */
+  font-size: 15px;
 }
 
 .manage-movies-table th {
   background-color: #f4f4f4;
-  font-size: 14px; /* Ensure headers are slightly larger */
+  font-size: 14px;
 }
 
 .manage-movies-table td img {
-  width: 45px; /* Slightly smaller image width */
-  height: 68px; /* Slightly smaller image height */
+  width: 45px;
+  height: 68px;
 }
 
 .editButton,
@@ -41,11 +91,11 @@
   background-color: #6c757d;
   color: #fff;
   border: none;
-  padding: 4px 8px; /* Smaller buttons */
+  padding: 4px 8px;
   margin-right: 5px;
   border-radius: 3px;
   cursor: pointer;
-  font-size: 12px; /* Smaller font size for buttons */
+  font-size: 12px;
 }
 
 .deleteButton {
@@ -67,7 +117,7 @@
   padding: 10px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 20px; /* Slightly smaller add button */
+  font-size: 20px;
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -80,6 +130,9 @@
 }
 
 @media (max-width: 600px) {
+  .search-button {
+    font-size: 10px;
+  }
   .manage-movies-container {
     padding: 5px;
   }
@@ -87,27 +140,41 @@
   .manage-movies-table th,
   .manage-movies-table td {
     padding: 6px;
-    font-size: 12px; /* Smaller font size for small screens */
+    font-size: 12px;
   }
 
   .manage-movies-table td img {
     width: 35px;
-    height: 52px; /* Smaller images for small screens */
+    height: 52px;
   }
 
   .editButton,
   .deleteButton {
     padding: 4px;
-    font-size: 10px; /* Smaller buttons for small screens */
+    font-size: 10px;
   }
 
   .manage-movies-container h2 {
-    font-size: 16px; /* Smaller heading for small screens */
+    font-size: 16px;
     margin-top: 15%;
   }
 
   .add-movie-button {
     padding: 8px;
-    font-size: 16px; /* Adjust button size for small screens */
+    font-size: 16px;
+  }
+
+
+  /* Adjust the search bar and button on small screens */
+  .search-bar {
+    width: 150px; /* Reduce width of the search bar */
+    font-size: 10px; /* Smaller font size */
+    margin-top: 20%; /* Adjust margin */
+  }
+
+  .search-button {
+    padding: 6px 8px; /* Smaller padding for the search button */
+    font-size: 14px; /* Smaller font size */
+    margin-top: 20%; /* Adjust margin */
   }
 }

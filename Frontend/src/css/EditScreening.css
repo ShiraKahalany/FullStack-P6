@@ -36,7 +36,7 @@
     box-sizing: border-box;
   }
   
-  .save-button {
+  .save-button, .cancel-b {
     background-color: #28a745;
     color: #fff;
     border: none;
@@ -52,3 +52,35 @@
     background-color: #218838;
   }
   
+  .cancel-b {
+    background-color: #dc3545;
+  }
+
+  .cancel-b:hover {
+    background-color: #c82333;
+  }
+
+  .buttons-group {
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (max-width: 768px) {
+    .edit-screening-container, .add-screening-container {
+      padding: 10px;
+    }
+  
+    .edit-screening-container h2, .add-screening-container h2 {
+      font-size: 20px;
+    }
+  
+    .edit-screening-form select, .edit-screening-form input,
+    .add-screening-form select, .add-screening-form input {
+      font-size: 14px;
+    }
+  
+    .save-button, .cancel-b , .cancelB {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  }

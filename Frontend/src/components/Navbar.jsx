@@ -43,11 +43,11 @@ function NavBar() {
           <Link to="/cart">
             <FontAwesomeIcon icon={faShoppingCart} size="lg" />
           </Link>
-          {user && user.isAdmin && (
+          {( user && user.isAdmin) ? (
             <Link to="/admin">
               <FontAwesomeIcon icon={faShieldAlt} size="lg" />
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
       <div className="navbar-user">

@@ -51,6 +51,10 @@ const EditMovie = () => {
     return <div>Loading...</div>;
   }
 
+  const handleCancel = () => {
+    navigate('/admin/movies');
+  };
+
   return (
     <div className="movie-form-container">
       <h2>Edit Movie</h2>
@@ -97,6 +101,7 @@ const EditMovie = () => {
           <input type="text" name="imagePath" defaultValue={movie.imagePath} />
         </label>
         <button type="submit" className="save-button">Save Changes</button>
+        <button type="button" className="cancelB" onClick={handleCancel}>Cancel</button>
       </form>
     </div>
   );

@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faUserTie, faSearch } from '@fortawesome/free-solid-svg-icons';
 import '../css/ManageUsers.css';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
-    // Fetch current logged-in user (assuming this is stored in local storage or can be fetched from the backend)
     const loggedInUser = JSON.parse(localStorage.getItem('user'));
     setCurrentUserId(loggedInUser?.id);
-    
+
     fetchUsers();
   }, []);
 
@@ -38,11 +38,32 @@ const ManageUsers = () => {
       });
   };
 
+  const filteredUsers = users.filter(user => {
+    return (
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.id.toString().includes(searchTerm)
+    );
+  });
+
   return (
     <div className="manage-users-container">
-      <h2>Manage Users</h2>
+      <div className="manage-users-header">
+        <h2>Manage Users</h2>
+        <div className="search-container">
+          <button className="search-button">
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+          <input
+            type="text"
+            placeholder="Search by Username or ID..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+          />
+        </div>
+      </div>
       <div className="users-grid">
-        {users.map(user => (
+        {filteredUsers.map(user => (
           <div className={`user-card ${user.isAdmin ? 'admin-card' : 'user-card'}`} key={user.id}>
             <FontAwesomeIcon icon={faUser} className="user-icon" />
             <p><strong>ID:</strong> {user.id}</p>

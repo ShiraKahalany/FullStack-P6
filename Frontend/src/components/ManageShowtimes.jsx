@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import '../css/ManageShowtimes.css';
 
 const ManageShowtimes = () => {
   const [screenings, setScreenings] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -48,13 +49,35 @@ const ManageShowtimes = () => {
     navigate('/admin/showtimes/add-screening');
   };
 
+  const filteredScreenings = screenings.filter(screening => {
+    return (
+      screening.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      screening.screeningId.toString().includes(searchTerm) ||
+      screening.hallName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
     <div className="manage-showtimes-container">
-      <h2>Manage Showtimes</h2>
+      <div className="manage-showtimes-header">
+        <h2>Manage Showtimes</h2>
+        <div className="search-container">
+          <button className="search-button">
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+          <input
+            type="text"
+            placeholder="Search by Title, ID, or Hall..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+          />
+        </div>
+      </div>
       <table className="manage-showtimes-table">
         <thead>
           <tr>
@@ -68,7 +91,7 @@ const ManageShowtimes = () => {
           </tr>
         </thead>
         <tbody>
-          {screenings.map((screening) => (
+          {filteredScreenings.map((screening) => (
             <tr key={screening.screeningId}>
               <td><img src={screening.imagePath} alt={screening.title} className="movie-image" /></td>
               <td>{screening.screeningId}</td>

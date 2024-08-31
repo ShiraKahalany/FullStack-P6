@@ -1,7 +1,56 @@
+.manage-showtimes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-bar {
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 250px;
+  transition: all 0.3s ease;
+}
+
+.search-bar:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.search-button {
+  background-color: #f9f9f9;
+  border: none;
+  border-radius: 5px 0 0 5px;
+  padding: 8px 12px;
+  margin-right: -1px;
+  cursor: pointer;
+  color: black;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button:hover {
+  background-color: #f1f1f1;
+}
+
+/* Existing CSS for the rest of the layout */
+
 .manage-showtimes-container {
   padding: 20px;
-  max-width: 1200px; /* Set a maximum width for larger screens */
-  margin: 80px auto 0; /* Adjust top margin to avoid header overlap */
+  max-width: 1200px;
+  margin: 80px auto 0;
+  width: 100vw; /* Full width of the viewport */
+  height: 100vh; /* Full height of the viewport */
 }
 
 .manage-showtimes-container h2 {
@@ -13,10 +62,8 @@
 
 .manage-showtimes-table {
   width: 100%;
-  max-width: 100%; /* Ensure table width does not exceed container width */
   border-collapse: collapse;
   margin-bottom: 20px;
-  overflow-x: auto; /* Add horizontal scroll for small screens */
 }
 
 .manage-showtimes-table th,
@@ -33,10 +80,8 @@
 .manage-showtimes-table td img {
   width: 50px;
   height: 75px;
-  object-fit: cover; /* Ensure images are not distorted */
+  object-fit: cover;
 }
-
-
 
 .add-showtime-button {
   background-color: #9e71c5;
@@ -61,7 +106,7 @@
 @media (max-width: 600px) {
   .manage-showtimes-container {
     padding: 10px;
-    margin-top: 60px; /* Adjust top margin for smaller screens */
+    margin-top: 60px;
   }
 
   .manage-showtimes-container h2 {
@@ -79,14 +124,24 @@
     height: 45px;
   }
 
-
   .add-showtime-button {
-    width: 32px; /* Smaller width */
-    height: 32px; /* Smaller height */
-    padding: 0; /* Remove inner padding */
-    font-size: 14px; /* Adjust font size for smaller buttons */
-    display: flex; /* Align icon centrally */
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 14px;
+    display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Smaller search bar and button for mobile screens */
+  .search-bar {
+    width: 150px;
+    font-size: 10px;
+  }
+
+  .search-button {
+    padding: 6px 8px;
+    font-size: 14px;
   }
 }
