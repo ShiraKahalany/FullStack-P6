@@ -68,13 +68,36 @@ const createMovie = (req, res) => {
 
 const updateMovie = (req, res) => {
   const { id } = req.params;
-  const { title, description, duration, genre, director, releaseDate, trailerPath, imagePath } = req.body;
-  const sql = 'UPDATE movies SET title = ?, description = ?, duration = ?, genre = ?, director = ?, releaseDate = ?, trailerPath = ?, imagePath = ? WHERE id = ?';
-  db.query(sql, [title, description, duration, genre, director, releaseDate, trailerPath, imagePath, id], (err, results) => {
+  const updates = req.body;
+
+  // Check if there are fields to update
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).json({ error: "No fields to update" });
+  }
+
+  // Create arrays to hold the SQL parts and values
+  const sqlFields = [];
+  const values = [];
+
+  // Loop through the updates and prepare the SQL fields and values
+  Object.keys(updates).forEach((field) => {
+    sqlFields.push(`${field} = ?`);
+    values.push(updates[field]);
+  });
+
+  // Add the movie ID to the values array
+  values.push(id);
+
+  // Construct the final SQL query
+  const sql = `UPDATE movies SET ${sqlFields.join(', ')} WHERE id = ?`;
+
+  // Execute the query
+  db.query(sql, values, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: 'Movie updated' });
   });
 };
+
 
 
 

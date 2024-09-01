@@ -7,6 +7,7 @@ import '../css/ManageHalls.css';
 const ManageHalls = () => {
   const [halls, setHalls] = useState([]);
   const [isEditing, setIsEditing] = useState(null);
+  const [originalHalls, setOriginalHalls] = useState([]); // Store original hall data
   const [newHall, setNewHall] = useState({ name: '', capacity: '' });
 
   useEffect(() => {
@@ -15,7 +16,10 @@ const ManageHalls = () => {
 
   const fetchHalls = () => {
     axios.get('http://localhost:5000/api/halls')
-      .then(response => setHalls(response.data))
+      .then(response => {
+        setHalls(response.data);
+        setOriginalHalls(response.data); // Store original data when fetched
+      })
       .catch(error => console.error('Error fetching halls:', error));
   };
 
@@ -34,7 +38,18 @@ const ManageHalls = () => {
 
   const handleSave = (id) => {
     const hallToSave = halls.find(hall => hall.id === id);
-    axios.put(`http://localhost:5000/api/halls/${id}`, hallToSave)
+    const originalHall = originalHalls.find(hall => hall.id === id);
+
+    // Prepare an object to hold only the changed fields
+    const updatedFields = {};
+    if (hallToSave.name !== originalHall.name) {
+      updatedFields.name = hallToSave.name;
+    }
+    if (hallToSave.capacity !== originalHall.capacity) {
+      updatedFields.capacity = hallToSave.capacity;
+    }
+
+    axios.put(`http://localhost:5000/api/halls/${id}`, updatedFields)
       .then(() => {
         fetchHalls();
         setIsEditing(null);
@@ -73,7 +88,6 @@ const ManageHalls = () => {
         });
     }
   };
-  
 
   return (
     <div className="manage-halls-container">

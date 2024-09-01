@@ -106,9 +106,9 @@ const createTicket = (req, res) => {
 
 const updateTicket = (req, res) => {
   const { id } = req.params;
-  const { userId, screeningId, seatNumber, price, isPaid } = req.body;
-  const sql = 'UPDATE tickets SET userId = ?, screeningId = ?, seatNumber = ?, price = ?, isPaid = ? WHERE id = ?';
-  db.query(sql, [userId, screeningId, seatNumber, price, isPaid, id], (err, results) => {
+  const { isPaid } = req.body;
+  const sql = 'UPDATE tickets SET isPaid = ? WHERE id = ?';
+  db.query(sql, [isPaid, id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: 'Ticket updated' });
   });

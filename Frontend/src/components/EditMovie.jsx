@@ -22,26 +22,47 @@ const EditMovie = () => {
 
   const handleSave = (event) => {
     event.preventDefault();
-    const updatedMovie = {
-      title: event.target.title.value,
-      description: event.target.description.value,
-      duration: event.target.duration.value,
-      genre: event.target.genre.value,
-      director: event.target.director.value,
-      releaseDate: event.target.releaseDate.value,
-      trailerPath: event.target.trailerPath.value,
-      imagePath: event.target.imagePath.value,
-    };
-
-    axios.put(`http://localhost:5000/api/movies/${movieId}`, updatedMovie)
+  
+    // Create an object to hold the changed fields
+    const updatedFields = {};
+  
+    // Check each field and compare it to the original movie data
+    if (event.target.title.value !== movie.title) {
+      updatedFields.title = event.target.title.value;
+    }
+    if (event.target.description.value !== movie.description) {
+      updatedFields.description = event.target.description.value;
+    }
+    if (event.target.duration.value !== movie.duration) {
+      updatedFields.duration = event.target.duration.value;
+    }
+    if (event.target.genre.value !== movie.genre) {
+      updatedFields.genre = event.target.genre.value;
+    }
+    if (event.target.director.value !== movie.director) {
+      updatedFields.director = event.target.director.value;
+    }
+    if (event.target.releaseDate.value !== movie.releaseDate.split('T')[0]) {
+      updatedFields.releaseDate = event.target.releaseDate.value;
+    }
+    if (event.target.trailerPath.value !== movie.trailerPath) {
+      updatedFields.trailerPath = event.target.trailerPath.value;
+    }
+    if (event.target.imagePath.value !== movie.imagePath) {
+      updatedFields.imagePath = event.target.imagePath.value;
+    }
+  
+    // Send only the updated fields to the backend
+    axios.put(`http://localhost:5000/api/movies/${movieId}`, updatedFields)
       .then(() => {
-        navigate('/admin/movies')
+        navigate('/admin/movies');
       })
       .catch(error => {
         console.error('Error updating movie:', error);
         setError('Error updating movie');
       });
   };
+  
 
   if (error) {
     return <div>{error}</div>;

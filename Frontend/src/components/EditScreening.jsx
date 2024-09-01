@@ -12,8 +12,9 @@ const EditScreening = () => {
     movieId: '',
     hallId: '',
     date: '',
-    time: '' 
+    time: ''
   });
+  const [originalScreening, setOriginalScreening] = useState(null); // State to hold original screening data
   const [movies, setMovies] = useState([]);
   const [halls, setHalls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,15 +40,23 @@ const EditScreening = () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/screenings/${screeningId}`);
       const screeningData = response.data;
-  
+
       const formattedDate = new Date(screeningData.date).toISOString().split('T')[0];
-  
+
       setScreening({
         movieId: screeningData.movieId,
         hallId: screeningData.hallId,
         date: formattedDate,
-        time: screeningData.time.slice(0, 5)  // Ensure time is in HH:MM format
+        time: screeningData.time.slice(0, 5) // Ensure time is in HH:MM format
       });
+
+      setOriginalScreening({
+        movieId: screeningData.movieId,
+        hallId: screeningData.hallId,
+        date: formattedDate,
+        time: screeningData.time.slice(0, 5)
+      }); // Store the original data
+
       setLoading(false);
     } catch (err) {
       setError('Error fetching screening');
@@ -85,7 +94,26 @@ const EditScreening = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.put(`http://localhost:5000/api/screenings/${screeningId}`, screening)
+
+    // Create an object to hold the changed fields
+    const updatedFields = {};
+
+    // Check each field and compare it to the original screening data
+    if (screening.movieId !== originalScreening.movieId) {
+      updatedFields.movieId = screening.movieId;
+    }
+    if (screening.hallId !== originalScreening.hallId) {
+      updatedFields.hallId = screening.hallId;
+    }
+    if (screening.date !== originalScreening.date) {
+      updatedFields.date = screening.date;
+    }
+    if (screening.time !== originalScreening.time) {
+      updatedFields.time = screening.time;
+    }
+
+    // Send only the updated fields to the backend
+    axios.put(`http://localhost:5000/api/screenings/${screeningId}`, updatedFields)
       .then(() => navigate('/admin/showtimes'))
       .catch(error => setError('Error updating screening'));
   };
@@ -158,8 +186,8 @@ const EditScreening = () => {
           />
         </label>
         <div className="buttons-group">
-        <button type="submit" className="save-button">Save Changes</button>
-        <button type="button" className="cancel-b" onClick={handleCancel}>Cancel</button>
+          <button type="submit" className="save-button">Save Changes</button>
+          <button type="button" className="cancel-b" onClick={handleCancel}>Cancel</button>
         </div>
       </form>
     </div>

@@ -9,6 +9,7 @@ import MyOrders from './MyOrders';
 const Info = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [originalUser, setOriginalUser] = useState(null); // Store original user data
   const [editing, setEditing] = useState(false);
   const [showOrders, setShowOrders] = useState(false);
   const [password, setPassword] = useState('');
@@ -28,6 +29,7 @@ const Info = () => {
     axios.get(`http://localhost:5000/api/users/${storedUser.id}`)
       .then(response => {
         setUser(response.data);
+        setOriginalUser(response.data); // Store the original data
         setPassword(response.data.password);
         setUsername(response.data.username);
         setEmail(response.data.email);
@@ -55,11 +57,17 @@ const Info = () => {
   };
 
   const handleSaveClick = async () => {
-    const updateData = {
-      username: username,
-      email: email,
-      password: password, // Keep the old password if not changing it
-    };
+    // Prepare an object to hold only the changed fields
+    const updateData = {};
+    if (username !== originalUser.username) {
+      updateData.username = username;
+    }
+    if (email !== originalUser.email) {
+      updateData.email = email;
+    }
+    if (password !== originalUser.password) {
+      updateData.password = password;
+    }
   
     try {
       const updateResponse = await axios.put(`http://localhost:5000/api/users/${user.id}`, updateData);

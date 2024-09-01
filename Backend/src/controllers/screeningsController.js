@@ -136,48 +136,82 @@ const createScreening = (req, res) => {
 
 const updateScreening = (req, res) => {
   const { id } = req.params;
-  const { movieId, hallId, date, time } = req.body;
+  const updates = req.body;
 
-  // Query to get the duration of the movie
-  const getMovieDurationSql = 'SELECT duration FROM movies WHERE id = ?';
-  db.query(getMovieDurationSql, [movieId], (err, movieResults) => {
-    if (err) return res.status(500).json({ error: err.message });
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).json({ error: "No fields to update" });
+  }
 
-    const movieDuration = movieResults[0].duration;
-    const startTime = new Date(`${date} ${time}`);
-    const endTime = new Date(startTime);
-    endTime.setMinutes(endTime.getMinutes() + movieDuration);
-
-    // Convert times to MySQL TIME format (HH:MM:SS)
-    const startTimeStr = startTime.toISOString().split('T')[1].split('.')[0];
-    const endTimeStr = endTime.toISOString().split('T')[1].split('.')[0];
-
-    // Query to check if there is a time conflict in the same hall
-    const checkConflictSql = `
-      SELECT * FROM screenings
-      WHERE hallId = ? AND date = ? AND id != ?
-      AND (
-        (time < ? AND ADDTIME(time, SEC_TO_TIME(? * 60)) > ?)
-        OR
-        (? < time AND ? > time)
-      )
-    `;
-    db.query(checkConflictSql, [hallId, date, id, startTimeStr, movieDuration, startTimeStr, endTimeStr, endTimeStr], (err, conflictResults) => {
+  // If movieId is present, fetch the movie duration
+  if (updates.movieId) {
+    const getMovieDurationSql = 'SELECT duration FROM movies WHERE id = ?';
+    db.query(getMovieDurationSql, [updates.movieId], (err, movieResults) => {
       if (err) return res.status(500).json({ error: err.message });
 
-      if (conflictResults.length > 0) {
-        return res.status(400).json({ error: 'There is another screening in this time. Please choose another time.' });
-      }
+      const movieDuration = movieResults[0].duration;
+      const startTime = new Date(`${updates.date} ${updates.time}`);
+      const endTime = new Date(startTime);
+      endTime.setMinutes(endTime.getMinutes() + movieDuration);
 
-      // If no conflict, update the screening
-      const updateSql = 'UPDATE screenings SET movieId = ?, hallId = ?, date = ?, time = ? WHERE id = ?';
-      db.query(updateSql, [movieId, hallId, date, time, id], (err, results) => {
+      // Convert times to MySQL TIME format (HH:MM:SS)
+      const startTimeStr = startTime.toISOString().split('T')[1].split('.')[0];
+      const endTimeStr = endTime.toISOString().split('T')[1].split('.')[0];
+
+      // Check for time conflicts in the same hall
+      const checkConflictSql = `
+        SELECT * FROM screenings
+        WHERE hallId = ? AND date = ? AND id != ?
+        AND (
+          (time < ? AND ADDTIME(time, SEC_TO_TIME(? * 60)) > ?)
+          OR
+          (? < time AND ? > time)
+        )
+      `;
+      db.query(checkConflictSql, [updates.hallId, updates.date, id, startTimeStr, movieDuration, startTimeStr, endTimeStr, endTimeStr], (err, conflictResults) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: 'Screening updated' });
+
+        if (conflictResults.length > 0) {
+          return res.status(400).json({ error: 'There is another screening in this time. Please choose another time.' });
+        }
+
+        // If no conflict, proceed to update the screening
+        const sqlFields = [];
+        const values = [];
+
+        Object.keys(updates).forEach((field) => {
+          sqlFields.push(`${field} = ?`);
+          values.push(updates[field]);
+        });
+
+        values.push(id);
+
+        const updateSql = `UPDATE screenings SET ${sqlFields.join(', ')} WHERE id = ?`;
+        db.query(updateSql, values, (err, results) => {
+          if (err) return res.status(500).json({ error: err.message });
+          res.json({ message: 'Screening updated' });
+        });
       });
     });
-  });
+  } else {
+    // If movieId is not updated, directly update other fields
+    const sqlFields = [];
+    const values = [];
+
+    Object.keys(updates).forEach((field) => {
+      sqlFields.push(`${field} = ?`);
+      values.push(updates[field]);
+    });
+
+    values.push(id);
+
+    const updateSql = `UPDATE screenings SET ${sqlFields.join(', ')} WHERE id = ?`;
+    db.query(updateSql, values, (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Screening updated' });
+    });
+  }
 };
+
 
 
 

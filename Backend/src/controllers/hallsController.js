@@ -70,32 +70,55 @@ const updateHall = (req, res) => {
   const { id } = req.params;
   const { name, capacity } = req.body;
 
-  // First, check if there are any tickets with seat numbers greater than the new capacity
-  const checkTicketsSql = `
-    SELECT COUNT(*) AS ticketCount
-    FROM tickets
-    INNER JOIN screenings ON tickets.screeningId = screenings.id
-    WHERE screenings.hallId = ? AND tickets.seatNumber > ?
-  `;
+  // First, check if the `capacity` field is included in the request and if it would cause any conflicts.
+  if (capacity) {
+    const checkTicketsSql = `
+      SELECT COUNT(*) AS ticketCount
+      FROM tickets
+      INNER JOIN screenings ON tickets.screeningId = screenings.id
+      WHERE screenings.hallId = ? AND tickets.seatNumber > ?
+    `;
 
-  db.query(checkTicketsSql, [id, capacity], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    db.query(checkTicketsSql, [id, capacity], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
 
-    const ticketCount = results[0].ticketCount;
-    if (ticketCount > 0) {
-      return res.status(400).json({
-        error: 'Cannot update hall capacity because there are existing tickets with seat numbers exceeding the new capacity.'
-      });
+      const ticketCount = results[0].ticketCount;
+      if (ticketCount > 0) {
+        return res.status(400).json({
+          error: 'Cannot update hall capacity because there are existing tickets with seat numbers exceeding the new capacity.'
+        });
+      }
+
+      // Proceed with the update if no conflict
+      updateHallInDb();
+    });
+  } else {
+    // If `capacity` is not being updated, just proceed with the update
+    updateHallInDb();
+  }
+
+  function updateHallInDb() {
+    const fieldsToUpdate = [];
+    const values = [];
+
+    if (name !== undefined) {
+      fieldsToUpdate.push('name = ?');
+      values.push(name);
     }
+    if (capacity !== undefined) {
+      fieldsToUpdate.push('capacity = ?');
+      values.push(capacity);
+    }
+    values.push(id);
 
-    // If no conflict, proceed with the update
-    const sql = 'UPDATE halls SET name = ?, capacity = ? WHERE id = ?';
-    db.query(sql, [name, capacity, id], (err, results) => {
+    const sql = `UPDATE halls SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
+    db.query(sql, values, (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ message: 'Hall updated successfully' });
     });
-  });
+  }
 };
+
 
 
 const deleteHall = (req, res) => {

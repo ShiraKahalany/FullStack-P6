@@ -148,7 +148,7 @@ const Cart = () => {
         // Update each ticket to set isPaid to true and update bookedSeats for each screening
         await Promise.all(cartItems.map(async item => {
             // Mark the ticket as paid
-            await axios.put(`http://localhost:5000/api/tickets/${item.id}`, { ...item, isPaid: true });
+            await axios.put(`http://localhost:5000/api/tickets/${item.id}`, { isPaid: true });
 
             // Fetch the current bookedSeats for the screening
             const screeningResponse = await axios.get(`http://localhost:5000/api/screenings/${item.screeningId}`);

@@ -93,12 +93,35 @@ const createUser = (req, res) => {
 const updateUser = (req, res) => {
   const { id } = req.params;
   const { username, password, email } = req.body;
-  const sql = 'UPDATE users SET username = ?, password = ?, email = ? WHERE id = ?';
-  db.query(sql, [username, password, email, id], (err, results) => {
+
+  // Prepare an array to store the SQL fields that need to be updated
+  const fieldsToUpdate = [];
+  const values = [];
+
+  // Check each field and add it to the update array if it's provided in the request
+  if (username !== undefined) {
+    fieldsToUpdate.push('username = ?');
+    values.push(username);
+  }
+  if (password !== undefined) {
+    fieldsToUpdate.push('password = ?');
+    values.push(password);
+  }
+  if (email !== undefined) {
+    fieldsToUpdate.push('email = ?');
+    values.push(email);
+  }
+  values.push(id);
+
+  // Construct the SQL query dynamically based on the provided fields
+  const sql = `UPDATE users SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
+
+  db.query(sql, values, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: 'User updated' });
   });
 };
+
 
 
 const updateUserToManager = (req, res) => {
