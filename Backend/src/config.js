@@ -1,4 +1,4 @@
-const mysql = require('mysql2'); // Make sure this is included at the top
+const mysql = require('mysql2'); // Import the mysql module
 const dotenv = require('dotenv');
 const path = require('path');
 

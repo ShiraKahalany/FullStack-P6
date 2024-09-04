@@ -40,16 +40,20 @@ const MyOrders = ({ userId }) => {
         return updatedOrders; // Update the orders state
       });
   
-      // Perform the deletion of the order only after state is updated
-      if (shouldDeleteOrder) {
-        await axios.delete(`http://localhost:5000/api/orders/refund/${orderId}`);
-      }
-  
+      // Wait for the state update to complete
+      setTimeout(async () => {
+        // Perform the deletion of the order only after state is updated
+        if (shouldDeleteOrder) {
+          await axios.delete(`http://localhost:5000/api/orders/refund/${orderId}`);
+        }
+      }, 0);
+      
     } catch (error) {
       console.error('Error refunding ticket:', error);
       alert('Failed to refund ticket. Please try again.');
     }
   };
+  
   
   
   
